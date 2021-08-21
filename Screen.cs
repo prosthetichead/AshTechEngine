@@ -155,6 +155,7 @@ namespace AshTechEngine
         
         /// <summary>
         /// Load graphics content for the screen.
+        /// No need to load base
         /// </summary>
         public virtual void LoadContent() { }
 
