@@ -208,7 +208,7 @@ namespace AshTechEngine
                     // give it a chance to handle input and update presence.
                     if (!otherScreenHasFocus)
                     {
-                        //screen.HandleInput(input);
+                        screen.HandleInput();  // TODO: we may need to do something with this input manager?
 
                         screen.UpdatePresence(); // presence support
 
