@@ -1,17 +1,11 @@
-﻿///
-/// https://github.com/CartBlanche/MonoGame-Samples
-/// 
-///   
-/// 
-
-using System;
+﻿using System;
 using AshTechEngine.Input;
 using Microsoft.Xna.Framework;
 
 namespace AshTechEngine
 {
     /// <summary>
-    /// Enum describes the screen transition state.
+    /// The screen transition state.
     /// </summary>
     public enum ScreenState
     {
@@ -22,122 +16,70 @@ namespace AshTechEngine
     }
 
     /// <summary>
-    /// A screen is a single layer that has update and draw logic, and which
-    /// can be combined with other screens to create complex menus or levels. 
-    /// 
-    /// Transitions need to be writen by each screen but functionality exists here to 
-    /// support transitions
+    /// A screen is a single layer that has update and draw logic.
+    /// Transitions need to be writen by each screen. Timing is only handeled here
+    /// default transition time is Instant. 0 Seconds
     /// </summary>
     /// <remarks>
     /// Use ScreenManager to access ellements such as Game, SpriteBatch, Content and GraphicsDevice  
     /// </remarks>
     public abstract class Screen
     {
-        /// <summary>
-        /// Normally when one screen is brought up over the top of another,
-        /// the first screen will transition off to make room for the new
-        /// one. This property indicates whether the screen is only a small
-        /// popup, in which case screens underneath it do not need to bother
-        /// transitioning off.
-        /// </summary>
+
         public bool IsPopup
         {
             get { return isPopup; }
             protected set { isPopup = value; }
         }
-        bool isPopup = false;
+        private bool isPopup = false;
 
-
-        /// <summary>
-        /// Indicates how long the screen takes to
-        /// transition on when it is activated.
-        /// </summary>
         public TimeSpan TransitionOnTime
         {
             get { return transitionOnTime; }
             protected set { transitionOnTime = value; }
         }
-        TimeSpan transitionOnTime = TimeSpan.Zero;
-
-
-        /// <summary>
-        /// Indicates how long the screen takes to
-        /// transition off when it is deactivated.
-        /// </summary>
+        private TimeSpan transitionOnTime = TimeSpan.Zero;
+                
         public TimeSpan TransitionOffTime
         {
             get { return transitionOffTime; }
             protected set { transitionOffTime = value; }
         }
-
         private TimeSpan transitionOffTime = TimeSpan.Zero;
 
-
-        /// <summary>
-        /// Gets the current position of the screen transition, ranging
-        /// from zero (fully active, no transition) to one (transitioned
-        /// fully off to nothing).
-        /// </summary>
         public float TransitionPosition
         {
             get { return transitionPosition; }
             protected set { transitionPosition = value; }
         }
-
         float transitionPosition = 1;
 
-
-        /// <summary>
-        /// Gets the current alpha of the screen transition, ranging
-        /// from 255 (fully active, no transition) to 0 (transitioned
-        /// fully off to nothing).
-        /// </summary>
         public byte TransitionAlpha
         {
             get { return (byte)(255 - TransitionPosition * 255); }
         }
 
-        /// <summary>
-        /// Gets the current screen transition state.
-        /// </summary>
         public ScreenState ScreenState
         {
             get { return screenState; }
             protected set { screenState = value; }
         }
-
         ScreenState screenState = ScreenState.TransitionOn;
 
-        /// <summary>
-        /// There are two possible reasons why a screen might be transitioning
-        /// off. It could be temporarily going away to make room for another
-        /// screen that is on top of it, or it could be going away for good.
-        /// This property indicates whether the screen is exiting for real:
-        /// if set, the screen will automatically remove itself as soon as the
-        /// transition finishes.
-        /// </summary>
         public bool IsExiting
         {
             get { return isExiting; }
             protected set { isExiting = value; }
         }
-
         bool isExiting = false;
-
-
-        /// <summary>
-        /// Checks whether this screen is active and can respond to user input.
-        /// </summary>
+                
         public bool IsActive
         {
             get
             {
-                return !otherScreenHasFocus &&
-                       (screenState == ScreenState.TransitionOn ||
-                        screenState == ScreenState.Active);
+                return !otherScreenHasFocus && (screenState == ScreenState.TransitionOn || screenState == ScreenState.Active);
             }
         }
-
         bool otherScreenHasFocus;
 
 
@@ -149,7 +91,6 @@ namespace AshTechEngine
             get { return screenManager; }
             internal set { screenManager = value; }
         }
-
         ScreenManager screenManager;
 
         
@@ -162,14 +103,15 @@ namespace AshTechEngine
 
         /// <summary>
         /// Unload content for the screen.
+        /// No need to load base
         /// </summary>
         public virtual void UnloadContent() { }
 
         
         /// <summary>
-        /// Allows the screen to run logic, such as updating the transition position.
-        /// Unlike HandleInput, this method is called regardless of whether the screen
-        /// is active, hidden, or in the middle of a transition.
+        /// runs the screens logic.
+        /// This update is ALWAYS ran regardless of screen state or state of other screens
+        /// base must be ran
         /// </summary>
         public virtual void Update(GameTime gameTime, bool otherScreenHasFocus,
                                                       bool coveredByOtherScreen)
@@ -178,14 +120,10 @@ namespace AshTechEngine
 
             if (isExiting)
             {
-                // If the screen is going away to die, it should transition off.
                 screenState = ScreenState.TransitionOff;
-
                 if (!UpdateTransition(gameTime, transitionOffTime, 1))
                 {
-                    // When the transition finishes, remove the screen.
                     ScreenManager.RemoveScreen(this);
-
                     isExiting = false;
                 }
             }
@@ -194,12 +132,10 @@ namespace AshTechEngine
                 // If the screen is covered by another, it should transition off.
                 if (UpdateTransition(gameTime, transitionOffTime, 1))
                 {
-                    // Still busy transitioning.
                     screenState = ScreenState.TransitionOff;
                 }
                 else
                 {
-                    // Transition finished!
                     screenState = ScreenState.Hidden;
                 }
             }
@@ -208,12 +144,10 @@ namespace AshTechEngine
                 // Otherwise the screen should transition on and become active.
                 if (UpdateTransition(gameTime, transitionOnTime, -1))
                 {
-                    // Still busy transitioning.
                     screenState = ScreenState.TransitionOn;
                 }
                 else
                 {
-                    // Transition finished!
                     screenState = ScreenState.Active;
                 }
             }
@@ -250,9 +184,7 @@ namespace AshTechEngine
 
 
         /// <summary>
-        /// Allows the screen to handle user input. Unlike Update, this method
-        /// is only called when the screen is active, and not when some other
-        /// screen has taken the focus.
+        /// Allows the screen to handle user input. Only called when screen is active
         /// </summary>
         public virtual void HandleInput(GameTime gameTime, InputManager input) { }
 
@@ -263,9 +195,7 @@ namespace AshTechEngine
         public abstract void Draw(GameTime gameTime);
 
         /// <summary>
-        /// Tells the screen to go away. Unlike ScreenManager.RemoveScreen, which
-        /// instantly kills the screen, this method respects the transition timings
-        /// and will give the screen a chance to transition off.
+        /// Tells the screen to go away, honners transition times.
         /// </summary>
         public virtual void ExitScreen()
         {

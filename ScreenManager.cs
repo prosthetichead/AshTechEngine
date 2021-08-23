@@ -1,11 +1,4 @@
-﻿/////////
-/// Screen Manager  
-/// https://github.com/CartBlanche/MonoGame-Samples
-///  
-/// The Meat and Glue of the AshTechEngine 
-/// 
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -37,57 +30,42 @@ namespace AshTechEngine
         ContentManager content;
         SpriteBatch spriteBatch;
         SpriteFont font;
-        Texture2D blankTexture;
         
-        //Rectangle titleSafeArea;
-
-        bool traceEnabled;
-
 
         /// <summary>
-        /// Expose access to our Game instance (this is protected in the
-        /// default GameComponent, but we want to make it public).
+        /// access to our Game instance
         /// </summary>
         new public Game Game
         {
             get { return base.Game; }
         }
 
-
         /// <summary>
-        /// Expose access to our graphics device (this is protected in the
-        /// default DrawableGameComponent, but we want to make it public).
+        /// access to our graphics device
         /// </summary>
         new public GraphicsDevice GraphicsDevice
         {
             get { return base.GraphicsDevice; }
         }
 
-
         /// <summary>
-        /// A content manager used to load data that is shared between multiple
-        /// screens. This is never unloaded, so if a screen requires a large amount
-        /// of temporary data, it should create a local content manager instead.
+        /// A content manager!
         /// </summary>
         public ContentManager Content
         {
             get { return content; }
         }
 
-
         /// <summary>
-        /// A default SpriteBatch shared by all the screens. This saves
-        /// each screen having to bother creating their own local instance.
+        /// SpriteBatch shared by all the screens.
         /// </summary>
         public SpriteBatch SpriteBatch
         {
             get { return spriteBatch; }
         }
 
-
         /// <summary>
-        /// A default font shared by all the screens. This saves
-        /// each screen having to bother loading their own local copy.
+        /// A default font shared by all the screens.
         /// very useful when you just need to throw up a font for debugging
         /// </summary>
         public SpriteFont DefaultFont
@@ -96,30 +74,6 @@ namespace AshTechEngine
         }
 
 
-        /// <summary>
-        /// If true, the manager prints out a list of all the screens
-        /// each time it is updated. This can be useful for making sure
-        /// everything is being added and removed at the right times.
-        /// </summary>
-        public bool TraceEnabled
-        {
-            get { return traceEnabled; }
-            set { traceEnabled = value; }
-        }
-
-
-        ///// <summary>
-        ///// The title-safe area for the menus.
-        ///// </summary>
-        //public Rectangle TitleSafeArea
-        //{
-        //    get { return titleSafeArea; }
-        //}
-
-
-        /// <summary>
-        /// Constructs a new screen manager component.
-        /// </summary>
         public ScreenManager(Game game) : base(game)
         {
             input = new InputManager(game);
@@ -141,24 +95,13 @@ namespace AshTechEngine
             // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             font = content.Load<SpriteFont>("AshTech_DefaultFont");   //this is so we always have a default font to use, great for debugging
-            blankTexture = content.Load<Texture2D>("blank");  
-
+            
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
             {
                 screen.LoadContent();
             }
-
-            // update the title-safe area
-            //titleSafeArea = new Rectangle(
-            //    (int)Math.Floor(GraphicsDevice.Viewport.X +
-            //       GraphicsDevice.Viewport.Width * 0.05f),
-            //    (int)Math.Floor(GraphicsDevice.Viewport.Y +
-            //       GraphicsDevice.Viewport.Height * 0.05f),
-            //    (int)Math.Floor(GraphicsDevice.Viewport.Width * 0.9f),
-            //    (int)Math.Floor(GraphicsDevice.Viewport.Height * 0.9f));
         }
-
 
         /// <summary>
         /// Unload your graphics content.
@@ -168,7 +111,7 @@ namespace AshTechEngine
             // Unload content belonging to the screen manager.
             content.Unload();
 
-            // Tell each of the screens to unload their content.
+            // Tell each of the screens to unload their content, if they have any
             foreach (Screen screen in screens)
             {
                 screen.UnloadContent();
@@ -182,12 +125,8 @@ namespace AshTechEngine
         /// </summary>
         public override void Update(GameTime gameTime)
         {
-            // update the input manager
             input.Update(gameTime); 
 
-            // Make a copy of the master screen list, to avoid confusion if
-            // the process of updating one screen adds or removes others
-            // (or it happens on another thread)
             screensToUpdate.Clear();
             foreach (Screen screen in screens)
                 screensToUpdate.Add(screen);
@@ -195,61 +134,32 @@ namespace AshTechEngine
             bool otherScreenHasFocus = !Game.IsActive;  // first screen we just check if the game has focus on the OS level.
             bool coveredByOtherScreen = false;
 
-            // Loop as long as there are screens waiting to be updated.
+
             while (screensToUpdate.Count > 0)
             {
-                // Pop the topmost screen off the waiting list.
                 Screen screen = screensToUpdate[screensToUpdate.Count - 1];
                 screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
 
-                // Update the screen.
                 screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
                 if (screen.ScreenState == ScreenState.TransitionOn || screen.ScreenState == ScreenState.Active)
                 {
-                    // If this is the first active screen we came across,
-                    // give it a chance to handle input and update presence.
-                    if (!otherScreenHasFocus) 
+                    if (otherScreenHasFocus == false) 
                     {
-                        screen.HandleInput(gameTime, input);  // TODO: we may need to do something with this maybe pass the input manager?
+                        screen.HandleInput(gameTime, input);
                         otherScreenHasFocus = true; //now no other screen can run its input updates
                     }
-
-                    // If this is an active non-popup, inform any subsequent
-                    // screens that they are covered by it.
-                    if (!screen.IsPopup)
+                    if (screen.IsPopup == false)
                         coveredByOtherScreen = true;
                 }
             }
-
-            // Print debug trace?
-            if (traceEnabled)
-                TraceScreens();
         }
-
-
-        /// <summary>
-        /// Prints a list of all the screens, for debugging.
-        /// </summary>
-        void TraceScreens()
-        {
-            List<string> screenNames = new List<string>();
-
-            foreach (Screen screen in screens)
-                screenNames.Add(screen.GetType().Name);
-
-            Debug.WriteLine(string.Join(", ", screenNames.ToArray()));
-        }
-
 
         /// <summary>
         /// Tells each screen to draw itself.
         /// </summary>
         public override void Draw(GameTime gameTime)
-        {
-            // Make a copy of the master screen list, to avoid confusion if
-            // the process of drawing one screen adds or removes others
-            // (or it happens on another thread
+        {         
             screensToDraw.Clear();
             foreach (Screen screen in screens)
                 screensToDraw.Add(screen);
@@ -263,42 +173,23 @@ namespace AshTechEngine
         }
 
         /// <summary>
-        /// Draw an empty rectangle of the given size and color.
-        /// </summary>
-        /// <param name="rectangle">The destination rectangle.</param>
-        /// <param name="color">The color of the rectangle.</param>
-        public void DrawRectangle(Rectangle rectangle, Color color)
-        {
-            //SpriteBatch.Begin();
-            // this was changed to be Opaque
-            spriteBatch.Begin(0, BlendState.Opaque, null, null, null);
-            SpriteBatch.Draw(blankTexture, rectangle, color);
-            SpriteBatch.End();
-        }
-
-        /// <summary>
         /// Adds a new screen to the screen manager.
         /// </summary>
         public void AddScreen(Screen screen)
         {
             screen.ScreenManager = this;
 
-            // If we have a graphics device, tell the screen to load content.
-            if ((graphicsDeviceService != null) &&
-                (graphicsDeviceService.GraphicsDevice != null))
+            if ((graphicsDeviceService != null) && (graphicsDeviceService.GraphicsDevice != null))
             {
-                screen.LoadContent();
+                screen.LoadContent(); //if graphicsDeviceService is running then load content!
             }
 
             screens.Add(screen);
         }
 
-
         /// <summary>
-        /// Removes a screen from the screen manager. You should normally
-        /// use GameScreen.ExitScreen instead of calling this directly, so
-        /// the screen can gradually transition off rather than just being
-        /// instantly removed.
+        /// Removes a screen from the screen manager.
+        /// use screen exit rather then this as this does not do transitions
         /// </summary>
         public void RemoveScreen(Screen screen)
         {
@@ -312,34 +203,5 @@ namespace AshTechEngine
             screens.Remove(screen);
             screensToUpdate.Remove(screen);
         }
-
-
-        /// <summary>
-        /// Expose an array holding all the screens. We return a copy rather
-        /// than the real master list, because screens should only ever be added
-        /// or removed using the AddScreen and RemoveScreen methods.
-        /// </summary>
-        public Screen[] GetScreens()
-        {
-            return screens.ToArray();
-        }
-
-
-        ///// <summary>
-        ///// Helper draws a translucent black fullscreen sprite, used for fading
-        ///// screens in and out, and for darkening the background behind popups.
-        ///// </summary>
-        //public void FadeBackBufferToBlack(int alpha)
-        //{
-        //    Viewport viewport = GraphicsDevice.Viewport;
-
-        //    spriteBatch.Begin();
-
-        //    spriteBatch.Draw(blankTexture,
-        //                     new Rectangle(0, 0, viewport.Width, viewport.Height),
-        //                     new Color(0, 0, 0, alpha));
-
-        //    spriteBatch.End();
-        //}
     }
 }
