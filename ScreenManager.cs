@@ -1,6 +1,9 @@
 ﻿/////////
+/// Screen Manager  
 /// https://github.com/CartBlanche/MonoGame-Samples
 ///  
+/// The Meat and Glue of the AshTechEngine 
+/// 
 
 using System;
 using System.Diagnostics;
@@ -8,6 +11,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using AshTechEngine.Input;
 
 namespace AshTechEngine
 {
@@ -26,7 +30,7 @@ namespace AshTechEngine
         List<Screen> screensToUpdate = new List<Screen>();
         List<Screen> screensToDraw = new List<Screen>();
 
-        //InputState input = new InputState();
+        InputManager input;
 
         IGraphicsDeviceService graphicsDeviceService;
         
@@ -34,7 +38,8 @@ namespace AshTechEngine
         SpriteBatch spriteBatch;
         SpriteFont font;
         Texture2D blankTexture;
-        Rectangle titleSafeArea;
+        
+        //Rectangle titleSafeArea;
 
         bool traceEnabled;
 
@@ -83,6 +88,7 @@ namespace AshTechEngine
         /// <summary>
         /// A default font shared by all the screens. This saves
         /// each screen having to bother loading their own local copy.
+        /// very useful when you just need to throw up a font for debugging
         /// </summary>
         public SpriteFont DefaultFont
         {
@@ -102,21 +108,21 @@ namespace AshTechEngine
         }
 
 
-        /// <summary>
-        /// The title-safe area for the menus.
-        /// </summary>
-        public Rectangle TitleSafeArea
-        {
-            get { return titleSafeArea; }
-        }
+        ///// <summary>
+        ///// The title-safe area for the menus.
+        ///// </summary>
+        //public Rectangle TitleSafeArea
+        //{
+        //    get { return titleSafeArea; }
+        //}
 
 
         /// <summary>
         /// Constructs a new screen manager component.
         /// </summary>
-        public ScreenManager(Game game)
-            : base(game)
+        public ScreenManager(Game game) : base(game)
         {
+            input = new InputManager(game);
             content = new ContentManager(game.Services, "Content");
 
             graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(
@@ -134,8 +140,8 @@ namespace AshTechEngine
         {
             // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("AshTech_DefaultFont");
-            blankTexture = content.Load<Texture2D>("blank");
+            font = content.Load<SpriteFont>("AshTech_DefaultFont");   //this is so we always have a default font to use, great for debugging
+            blankTexture = content.Load<Texture2D>("blank");  
 
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
@@ -176,18 +182,17 @@ namespace AshTechEngine
         /// </summary>
         public override void Update(GameTime gameTime)
         {
-            // Read the keyboard and gamepad.
-            // input.Update();  /// Add Input back
+            // update the input manager
+            input.Update(gameTime); 
 
             // Make a copy of the master screen list, to avoid confusion if
             // the process of updating one screen adds or removes others
             // (or it happens on another thread)
             screensToUpdate.Clear();
-
             foreach (Screen screen in screens)
                 screensToUpdate.Add(screen);
 
-            bool otherScreenHasFocus = !Game.IsActive;
+            bool otherScreenHasFocus = !Game.IsActive;  // first screen we just check if the game has focus on the OS level.
             bool coveredByOtherScreen = false;
 
             // Loop as long as there are screens waiting to be updated.
@@ -195,24 +200,19 @@ namespace AshTechEngine
             {
                 // Pop the topmost screen off the waiting list.
                 Screen screen = screensToUpdate[screensToUpdate.Count - 1];
-
                 screensToUpdate.RemoveAt(screensToUpdate.Count - 1);
 
                 // Update the screen.
                 screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
 
-                if (screen.ScreenState == ScreenState.TransitionOn ||
-                    screen.ScreenState == ScreenState.Active)
+                if (screen.ScreenState == ScreenState.TransitionOn || screen.ScreenState == ScreenState.Active)
                 {
                     // If this is the first active screen we came across,
                     // give it a chance to handle input and update presence.
-                    if (!otherScreenHasFocus)
+                    if (!otherScreenHasFocus) 
                     {
-                        screen.HandleInput();  // TODO: we may need to do something with this input manager?
-
-                        screen.UpdatePresence(); // presence support
-
-                        otherScreenHasFocus = true;
+                        screen.HandleInput(gameTime, input);  // TODO: we may need to do something with this maybe pass the input manager?
+                        otherScreenHasFocus = true; //now no other screen can run its input updates
                     }
 
                     // If this is an active non-popup, inform any subsequent
@@ -251,7 +251,6 @@ namespace AshTechEngine
             // the process of drawing one screen adds or removes others
             // (or it happens on another thread
             screensToDraw.Clear();
-
             foreach (Screen screen in screens)
                 screensToDraw.Add(screen);
 
@@ -259,9 +258,6 @@ namespace AshTechEngine
             {
                 if (screen.ScreenState == ScreenState.Hidden)
                     continue;
-
-
-
                 screen.Draw(gameTime);
             }
         }
@@ -274,7 +270,7 @@ namespace AshTechEngine
         public void DrawRectangle(Rectangle rectangle, Color color)
         {
             //SpriteBatch.Begin();
-            // We changed this to be Opaque
+            // this was changed to be Opaque
             spriteBatch.Begin(0, BlendState.Opaque, null, null, null);
             SpriteBatch.Draw(blankTexture, rectangle, color);
             SpriteBatch.End();
@@ -329,21 +325,21 @@ namespace AshTechEngine
         }
 
 
-        /// <summary>
-        /// Helper draws a translucent black fullscreen sprite, used for fading
-        /// screens in and out, and for darkening the background behind popups.
-        /// </summary>
-        public void FadeBackBufferToBlack(int alpha)
-        {
-            Viewport viewport = GraphicsDevice.Viewport;
+        ///// <summary>
+        ///// Helper draws a translucent black fullscreen sprite, used for fading
+        ///// screens in and out, and for darkening the background behind popups.
+        ///// </summary>
+        //public void FadeBackBufferToBlack(int alpha)
+        //{
+        //    Viewport viewport = GraphicsDevice.Viewport;
 
-            spriteBatch.Begin();
+        //    spriteBatch.Begin();
 
-            spriteBatch.Draw(blankTexture,
-                             new Rectangle(0, 0, viewport.Width, viewport.Height),
-                             new Color(0, 0, 0, alpha));
+        //    spriteBatch.Draw(blankTexture,
+        //                     new Rectangle(0, 0, viewport.Width, viewport.Height),
+        //                     new Color(0, 0, 0, alpha));
 
-            spriteBatch.End();
-        }
+        //    spriteBatch.End();
+        //}
     }
 }

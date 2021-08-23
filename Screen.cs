@@ -1,11 +1,11 @@
-﻿
-///
+﻿///
 /// https://github.com/CartBlanche/MonoGame-Samples
 /// 
 ///   
 /// 
 
 using System;
+using AshTechEngine.Input;
 using Microsoft.Xna.Framework;
 
 namespace AshTechEngine
@@ -24,13 +24,15 @@ namespace AshTechEngine
     /// <summary>
     /// A screen is a single layer that has update and draw logic, and which
     /// can be combined with other screens to create complex menus or levels. 
+    /// 
+    /// Transitions need to be writen by each screen but functionality exists here to 
+    /// support transitions
     /// </summary>
     /// <remarks>
     /// Use ScreenManager to access ellements such as Game, SpriteBatch, Content and GraphicsDevice  
     /// </remarks>
     public abstract class Screen
     {
-
         /// <summary>
         /// Normally when one screen is brought up over the top of another,
         /// the first screen will transition off to make room for the new
@@ -68,7 +70,7 @@ namespace AshTechEngine
             protected set { transitionOffTime = value; }
         }
 
-        TimeSpan transitionOffTime = TimeSpan.Zero;
+        private TimeSpan transitionOffTime = TimeSpan.Zero;
 
 
         /// <summary>
@@ -95,7 +97,6 @@ namespace AshTechEngine
             get { return (byte)(255 - TransitionPosition * 255); }
         }
 
-
         /// <summary>
         /// Gets the current screen transition state.
         /// </summary>
@@ -106,7 +107,6 @@ namespace AshTechEngine
         }
 
         ScreenState screenState = ScreenState.TransitionOn;
-
 
         /// <summary>
         /// There are two possible reasons why a screen might be transitioning
@@ -254,15 +254,9 @@ namespace AshTechEngine
         /// is only called when the screen is active, and not when some other
         /// screen has taken the focus.
         /// </summary>
-        public virtual void HandleInput( ) { }  //TODO: might need to pass this something?
+        public virtual void HandleInput(GameTime gameTime, InputManager input) { }
 
-
-        /// <summary>
-        /// Screen-specific update to gamer rich presence.
-        /// </summary>
-        public virtual void UpdatePresence() { }
-
-
+ 
         /// <summary>
         /// This is called when the screen should draw itself.
         /// </summary>
@@ -271,7 +265,7 @@ namespace AshTechEngine
         /// <summary>
         /// Tells the screen to go away. Unlike ScreenManager.RemoveScreen, which
         /// instantly kills the screen, this method respects the transition timings
-        /// and will give the screen a chance to gradually transition off.
+        /// and will give the screen a chance to transition off.
         /// </summary>
         public virtual void ExitScreen()
         {

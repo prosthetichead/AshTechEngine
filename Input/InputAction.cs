@@ -58,6 +58,12 @@ namespace AshTechEngine.Input
         public List<Keys> keyboardKeys = new List<Keys>();
         public List<MouseButtons> mouseButtons = new List<MouseButtons>();
 
+        [Newtonsoft.Json.JsonConstructor]
+        public InputAction(string actionId, string actionName)
+        {
+            this.actionId = actionId;
+            this.actionName = actionName;
+        }
         public InputAction(string actionId, string actionName, params GamePadButtons[] gamePadButtons)
         {
             this.actionId = actionId;
