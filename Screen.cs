@@ -185,6 +185,7 @@ namespace AshTechEngine
 
         /// <summary>
         /// Allows the screen to handle user input. Only called when screen is active
+        /// base is not required
         /// </summary>
         public virtual void HandleInput(GameTime gameTime, InputManager input) { }
 
