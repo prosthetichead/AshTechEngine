@@ -25,12 +25,17 @@ namespace AshTechEngine
 
         InputManager input;
 
+        GameSettings gameSettings;
+
+        GraphicsDeviceManager graphics;
+
         IGraphicsDeviceService graphicsDeviceService;
         
         ContentManager content;
         SpriteBatch spriteBatch;
         SpriteFont font;
         FrameRate frameRate;
+
 
         
         /// <summary>
@@ -49,12 +54,22 @@ namespace AshTechEngine
             get { return base.GraphicsDevice; }
         }
 
+        public GraphicsDeviceManager Graphics
+        {
+            get { return graphics; }
+        }
+
         /// <summary>
         /// The Input Manager
         /// </summary>
         public InputManager Input
         {
             get { return input; }
+        }
+
+        public GameSettings GameSettings
+        {
+            get { return gameSettings; }
         }
 
         /// <summary>
@@ -83,8 +98,10 @@ namespace AshTechEngine
         }
 
 
-        public ScreenManager(Game game) : base(game)
+        public ScreenManager(Game game, GraphicsDeviceManager graphics) : base(game)
         {
+            this.graphics = graphics; // we need the graphics device manager 
+            
             input = new InputManager(game);
             content = new ContentManager(game.Services, "Content");
 
@@ -95,6 +112,9 @@ namespace AshTechEngine
 
             if (graphicsDeviceService == null)
                 throw new InvalidOperationException("No graphics device service.");
+
+            gameSettings = new GameSettings(this);
+            //gameSettings.ApplyConfig();
         }
 
 
