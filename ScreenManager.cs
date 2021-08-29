@@ -136,10 +136,7 @@ namespace AshTechEngine
         /// </summary>
         public override void Update(GameTime gameTime)
         {
-#if DEBUG
-            frameRate.Update(gameTime);
-            Game.Window.Title = "Debug Mode :: " + frameRate.framerate + " fps ";
-#endif
+
 
             input.Update(gameTime); 
 
@@ -175,7 +172,12 @@ namespace AshTechEngine
         /// Tells each screen to draw itself.
         /// </summary>
         public override void Draw(GameTime gameTime)
-        {         
+        {
+#if DEBUG
+            frameRate.Update(gameTime);
+            Game.Window.Title = "Debug Mode :: " + frameRate.framerate + " fps ";
+#endif
+
             screensToDraw.Clear();
             foreach (Screen screen in screens)
                 screensToDraw.Add(screen);
