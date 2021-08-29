@@ -30,7 +30,7 @@ namespace AshTechEngine.Input
         {
             this.game = game;
 
-            LoadInputActions();
+            inputActions = new Dictionary<string, InputAction>();
         }
 
 
@@ -253,43 +253,43 @@ namespace AshTechEngine.Input
             return currentMouseScreenPos;
         }
 
-       
-        public void LoadInputActions()
+        public void AddAction(InputAction action)
+        {
+            if (inputActions.ContainsKey(action.actionId))
+                inputActions[action.actionId] = action;
+            else
+                inputActions.Add(action.actionId, action);
+        }
+
+        public void SaveInputActions(string fileName)
+        {
+            //write out the file for reading next time
+            string json = JsonConvert.SerializeObject(inputActions, Formatting.Indented);
+            System.IO.File.WriteAllText(fileName, json);
+        }
+
+        public bool LoadInputActions(string fileName)
         {
             //try load the actions from JSON.
-            if (System.IO.File.Exists("controls.json"))
+            try
             {
-                //file exits so read it and deserialize into the inputActions List
-                string actions = System.IO.File.ReadAllText("controls.json");
-                inputActions = JsonConvert.DeserializeObject<Dictionary<string, InputAction>>(actions);
+                if (System.IO.File.Exists(fileName))
+                {
+                    //file exits so read it and deserialize into the inputActions List
+                    string actions = System.IO.File.ReadAllText(fileName);
+                    inputActions = JsonConvert.DeserializeObject<Dictionary<string, InputAction>>(actions);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else //file 
+            catch (Exception)
             {
-                inputActions = new Dictionary<string, InputAction>();
-               
-                //if cant load the file it dosn't exist so setup a default and save it to file for next time
-                InputAction inputAction_confirm = new InputAction("confirm", "Confirm", Keys.Enter);
-                inputAction_confirm.AddGamePadMap(GamePadButtons.Start, GamePadButtons.ButtonA);
-                inputActions.Add(inputAction_confirm.actionId, inputAction_confirm);
-
-                InputAction inputAction_moveLeft = new InputAction("moveLeft", "Move Left", Keys.A, Keys.Left);
-                inputAction_moveLeft.AddGamePadMap(GamePadButtons.Left);
-                inputActions.Add(inputAction_moveLeft.actionId, inputAction_moveLeft);
-
-                InputAction inputAction_moveRight = new InputAction("moveRight", "Move Right", Keys.D, Keys.Right);
-                inputAction_moveRight.AddGamePadMap(GamePadButtons.Right);
-                inputActions.Add(inputAction_moveRight.actionId, inputAction_moveRight);
-
-                InputAction inputAction_mouseBtn1 = new InputAction("mouseBtn1", "Mouse Button 1", MouseButtons.LeftButton);
-                inputActions.Add(inputAction_mouseBtn1.actionId, inputAction_mouseBtn1);
-                InputAction inputAction_mouseBtn2 = new InputAction("mouseBtn2", "Mouse Button 2", MouseButtons.RightButton);
-                inputActions.Add(inputAction_mouseBtn2.actionId, inputAction_mouseBtn2);
-
-                //write out the file for reading next time
-                string json = JsonConvert.SerializeObject(inputActions, Formatting.Indented);
-                System.IO.File.WriteAllText("controls.json", json);
-                
+                return false;
             }
+
         }
     }
 }

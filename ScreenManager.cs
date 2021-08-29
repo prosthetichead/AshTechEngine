@@ -30,8 +30,9 @@ namespace AshTechEngine
         ContentManager content;
         SpriteBatch spriteBatch;
         SpriteFont font;
-        
+        FrameRate frameRate;
 
+        
         /// <summary>
         /// access to our Game instance
         /// </summary>
@@ -46,6 +47,14 @@ namespace AshTechEngine
         new public GraphicsDevice GraphicsDevice
         {
             get { return base.GraphicsDevice; }
+        }
+
+        /// <summary>
+        /// The Input Manager
+        /// </summary>
+        public InputManager Input
+        {
+            get { return input; }
         }
 
         /// <summary>
@@ -81,6 +90,8 @@ namespace AshTechEngine
 
             graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(
                                                         typeof(IGraphicsDeviceService));
+
+            frameRate = new FrameRate(5);
 
             if (graphicsDeviceService == null)
                 throw new InvalidOperationException("No graphics device service.");
@@ -125,6 +136,11 @@ namespace AshTechEngine
         /// </summary>
         public override void Update(GameTime gameTime)
         {
+#if DEBUG
+            frameRate.Update(gameTime);
+            Game.Window.Title = "Debug Mode :: " + frameRate.framerate + " fps ";
+#endif
+
             input.Update(gameTime); 
 
             screensToUpdate.Clear();
