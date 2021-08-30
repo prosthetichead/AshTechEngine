@@ -114,7 +114,6 @@ namespace AshTechEngine
                 throw new InvalidOperationException("No graphics device service.");
 
             gameSettings = new GameSettings(this);
-            //gameSettings.ApplyConfig();
         }
 
 

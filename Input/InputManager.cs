@@ -24,7 +24,7 @@ namespace AshTechEngine.Input
         private Point currentMouseScreenPos;
         private Point previousMouseScreenPos;
 
-        private Dictionary<string, InputAction> inputActions;
+        public Dictionary<string, InputAction> inputActions;
 
         public InputManager(Game game)
         {
@@ -56,6 +56,8 @@ namespace AshTechEngine.Input
             previousMouseScreenPos = currentMouseScreenPos;
             currentMouseScreenPos = currentMouseState.Position;
         }
+
+
 
         //pressed action checks
         public bool IsActionPressed(string actionId)
