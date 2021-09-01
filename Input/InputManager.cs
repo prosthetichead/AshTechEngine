@@ -23,6 +23,7 @@ namespace AshTechEngine.Input
 
         private Point currentMouseScreenPos;
         private Point previousMouseScreenPos;
+               
 
         public Dictionary<string, InputAction> inputActions;
 
@@ -39,7 +40,7 @@ namespace AshTechEngine.Input
         ///Updates the keyboard and gamepad control states.
         ///Dont run this Game Screen Manager runs it for you
         ///</summary>
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             previousKeyboardState = currentKeyboardState;
             previousGamePadState = currentGamePadState;
@@ -55,9 +56,32 @@ namespace AshTechEngine.Input
 
             previousMouseScreenPos = currentMouseScreenPos;
             currentMouseScreenPos = currentMouseState.Position;
+
+
         }
 
+        /// <summary>
+        /// Designed to be called in a update loop until True is returned. 
+        /// if false is returned no input has been fired yet and this function should continue to be called.
+        /// if true is returned a input has been fired and the action has now been updated with the new input.
+        /// </summary>
+        /// <param name="actionId"></param>
+        /// <returns></returns>
+        public bool SetActionFromInput(string actionId)
+        {
+            var action = inputActions[actionId];
 
+            if (currentKeyboardState.GetPressedKeyCount() > 0)
+            {
+                action.gamePadButtons.Clear();
+                action.keyboardKeys.Clear();
+                action.mouseButtons.Clear();
+
+                action.keyboardKeys.Add(currentKeyboardState.GetPressedKeys()[0]);
+                return true;
+            }
+            return false;
+        }
 
         //pressed action checks
         public bool IsActionPressed(string actionId)

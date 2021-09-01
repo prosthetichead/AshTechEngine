@@ -157,7 +157,7 @@ namespace AshTechEngine
         {
 
 
-            input.Update(gameTime); 
+            input.Update(); 
 
             screensToUpdate.Clear();
             foreach (Screen screen in screens)
