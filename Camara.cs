@@ -54,6 +54,16 @@ namespace AshTechEngine
             Bounds = bounds.Bounds;
             UpdateMatrix();
         }
+
+        public Vector2 WorldTScreen(Vector2 screenPos)
+        {
+            return Vector2.Transform(screenPos, Transform);
+        }
+
+        public Vector2 ScreenToWorld(Vector2 screenPos)
+        {
+            return Vector2.Transform(screenPos, Matrix.Invert(Transform));
+        }
     }
 
 

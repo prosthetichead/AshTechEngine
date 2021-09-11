@@ -274,9 +274,9 @@ namespace AshTechEngine.Input
        //     return camera.RawPositionToCamara(currentMouseState.Position);
        // }
 
-        public Point GetMousePosition()
+        public Vector2 GetMousePosition()
         {
-            return currentMouseScreenPos;
+            return currentMouseScreenPos.ToVector2();
         }
 
         public void AddAction(InputAction action)
