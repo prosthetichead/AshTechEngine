@@ -10,8 +10,8 @@ namespace AshTechEngine
     public class SpriteSheet
     {
         private Texture2D texture;
-        private int singleSpriteWidth;
-        private int singleSpriteHeight;
+        public int singleSpriteWidth;
+        public int singleSpriteHeight;
         /// <summary>
         /// which sprite on the sheet to draw defaults to 0
         /// </summary>
