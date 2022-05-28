@@ -55,12 +55,12 @@ namespace AshTechEngine
             UpdateMatrix();
         }
 
-        public Vector2 WorldToScreen(Vector2 screenPos)
+        public Vector2 CameraToScreenPosition(Vector2 screenPos)
         {
             return Vector2.Transform(screenPos, Transform);
         }
 
-        public Vector2 ScreenToWorld(Vector2 screenPos)
+        public Vector2 ScreenToCameraPosition(Vector2 screenPos)
         {
             return Vector2.Transform(screenPos, Matrix.Invert(Transform));
         }
