@@ -33,7 +33,6 @@ namespace AshTechEngine
         
         ContentManager content;
         SpriteBatch spriteBatch;
-        SpriteFont font;
         FrameRate frameRate;
 
 
@@ -88,16 +87,7 @@ namespace AshTechEngine
             get { return spriteBatch; }
         }
 
-        /// <summary>
-        /// A default font shared by all the screens.
-        /// very useful when you just need to throw up a font for debugging
-        /// </summary>
-        public SpriteFont DefaultFont
-        {
-            get { return font; }
-        }
-
-
+        
         public ScreenManager(Game game, GraphicsDeviceManager graphics) : base(game)
         {
             this.graphics = graphics; // we need the graphics device manager 
@@ -124,7 +114,6 @@ namespace AshTechEngine
         {
             // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            font = content.Load<SpriteFont>("AshTech_DefaultFont");   //this is so we always have a default font to use, great for debugging
             
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
