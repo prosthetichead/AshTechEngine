@@ -8,7 +8,7 @@ Simple easy to use (and copy from!) MonoGame Engine with Screen Managment, Input
 * Add a Project Reference Dependancy to the MonoGame Project
   * Right click Dependancys -> Add Project Reference -> Tick AshTechEngine
 
-The majority of AshTechEngine functions using the ScreenManager class. Add a ScreenManager object to the main game class and added as a component.
+The core of AshTechEngine is the ScreenManager class. Add a ScreenManager object to the main game class and added as a component.
 Bellow is a basic example of a Game class using AshTechEngine.
 ```C# 
 using Microsoft.Xna.Framework;
