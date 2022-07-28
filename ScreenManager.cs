@@ -115,11 +115,14 @@ namespace AshTechEngine
             // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             
+            
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
             {
                 screen.LoadContent();
             }
+
+            Console.LoadContent(GraphicsDevice);
         }
 
         /// <summary>
@@ -144,7 +147,7 @@ namespace AshTechEngine
         /// </summary>
         public override void Update(GameTime gameTime)
         {
-
+            Console.Update();
 
             input.Update(); 
 
@@ -196,6 +199,9 @@ namespace AshTechEngine
                     continue;
                 screen.Draw(gameTime);
             }
+
+            //draw the console
+            Console.Draw(SpriteBatch);
         }
 
         /// <summary>
