@@ -89,12 +89,30 @@ namespace AshTechEngine
                 {
                     spriteBatch.DrawString(font, text, new Vector2(rectangle.Width + rectangle.X, rectangle.Y), colors, origin: new Vector2((int)stringSize.X, 0), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
                 }
-
+                if(alignment == Alignment.CenterLeft)
+                {
+                    spriteBatch.DrawString(font, text, new Vector2(rectangle.X, rectangle.Height/2 + rectangle.Y), colors, origin: new Vector2(0, (int)stringSize.Y / 2), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
+                }
                 if (alignment == Alignment.CenterCenter)
                 {
                     spriteBatch.DrawString(font, text, rectangle.Center.ToVector2(), colors, origin: new Vector2((int)stringSize.X / 2, (int)stringSize.Y / 2), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
                 }
-                
+                if (alignment == Alignment.CenterRight)
+                {
+                    spriteBatch.DrawString(font, text, new Vector2(rectangle.Width + rectangle.X, rectangle.Height / 2 + rectangle.Y), colors, origin: new Vector2(stringSize.X, (int)stringSize.Y / 2), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
+                }
+                if (alignment == Alignment.BottomLeft)
+                {
+                    spriteBatch.DrawString(font, text, new Vector2(rectangle.X, rectangle.Height + rectangle.Y), colors, origin: new Vector2(0, (int)stringSize.Y), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
+                }
+                if (alignment == Alignment.BottomCenter)
+                {
+                    spriteBatch.DrawString(font, text, new Vector2((int)rectangle.Width / 2 + rectangle.X, rectangle.Height + rectangle.Y), colors, origin: new Vector2((int)stringSize.X / 2, stringSize.Y), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
+                }
+                if (alignment == Alignment.BottomRight)
+                {
+                    spriteBatch.DrawString(font, text, new Vector2((int)rectangle.Width + rectangle.X, rectangle.Height + rectangle.Y), colors, origin: new Vector2((int)stringSize.X, stringSize.Y), scale: scale, rotation: rotation, layerDepth: layerDepth, characterSpacing: characterSpacing, lineSpacing: lineSpacing);
+                }
             }
         }
     }

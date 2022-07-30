@@ -146,11 +146,16 @@ namespace AshTechEngine
         /// Allows each screen to run logic.
         /// </summary>
         public override void Update(GameTime gameTime)
-        {
+        {   
+            input.Update();
+
             Console.Update();
 
-            input.Update(); 
-
+            //check for input ` to open and close the console
+            if(input.IsKeyTriggered(Microsoft.Xna.Framework.Input.Keys.OemTilde)){
+                Console.displayConsole = !Console.displayConsole;
+            }
+            
             screensToUpdate.Clear();
             foreach (Screen screen in screens)
                 screensToUpdate.Add(screen);

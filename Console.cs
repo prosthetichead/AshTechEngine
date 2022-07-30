@@ -28,19 +28,46 @@ namespace AshTechEngine
             error,
         }
 
+        private enum ConsoleState
+        {
+            open,
+            closed,
+            opening,
+            closing,
+        }
+
         private static SpriteSheet consoleSpriteSheet;
         private static Texture2D consoleTexture;
-
-        private static bool _displayConsole = true;
         private static List<ConsoleLine> _consoleLines;
-        private static bool startAnimating = true;
-        private static bool animating = true;
-
         internal static List<ConsoleLine> consoleLines { get { return _consoleLines; } }
-        public static bool displayConsole { get { return _displayConsole; } set { _displayConsole = value; startAnimating = true; } }
 
-        public static Rectangle PositionSize = new Rectangle(200, 0, 800, 250);
-        public static int animationSpeed = 1;
+
+        private static int animationSpeed = 20;
+        private static bool startAnimating = false;
+        private static ConsoleState consoleState = ConsoleState.closed;
+        public static bool displayConsole { 
+            get { 
+                if(consoleState == ConsoleState.closed || (startAnimating == true && consoleState == ConsoleState.opening) ) //extra or rule stops console flashing incorect position
+                    return false;
+                else
+                    return true;
+            } 
+            set {
+                if (value == false && consoleState == ConsoleState.open)
+                {
+                    startAnimating = true;
+                    consoleState = ConsoleState.closing;                    
+                }
+                if(value == true && consoleState == ConsoleState.closed)
+                {
+                    startAnimating = true;
+                    consoleState = ConsoleState.opening;                    
+                }
+                
+            } 
+        }
+
+        public static Rectangle PositionSize = new Rectangle(200, 0, 800, 250);        
         private static Rectangle consoleRectangle = new Rectangle(0, 0, 800, 0);
 
         internal static void LoadContent(GraphicsDevice graphicsDevice)
@@ -66,43 +93,40 @@ namespace AshTechEngine
         {
             if (startAnimating)
             {
-                animating = true;
                 consoleRectangle = PositionSize;
-                if (displayConsole)
+                if(consoleState == ConsoleState.opening)
                 {
                     consoleRectangle.Height = 0;
                 }
                 startAnimating = false;
             }
-            if (animating)
+
+            if (consoleState == ConsoleState.opening)
             {
-                if (displayConsole)
+                //grow the console till its the same size as PositionSize
+                consoleRectangle.Height += animationSpeed;
+                if (consoleRectangle.Height > PositionSize.Height)
                 {
-                    //grow the console till its the same size as PositionSize
-                    consoleRectangle.Height += animationSpeed;
-                    if (consoleRectangle.Height > PositionSize.Height)
-                    {
-                        animating = false;
-                        consoleRectangle.Height = PositionSize.Height;
-                    }   
+                    consoleState = ConsoleState.open;
+                    consoleRectangle.Height = PositionSize.Height;
                 }
-                else
+
+            }
+            else if(consoleState == ConsoleState.closing)
+            {
+                consoleRectangle.Height -= animationSpeed;
+                if (consoleRectangle.Height <= 0)
                 {
-                    consoleRectangle.Height -= animationSpeed;
-                    if (consoleRectangle.Height > 0)
-                    {
-                        animating = false;
-                        consoleRectangle.Height = PositionSize.Height;
-                    }
-                }
+                    consoleState = ConsoleState.closed;
+                    consoleRectangle.Height = 0;
+                }                
             }
         }
 
         internal static void Draw(SpriteBatch spriteBatch)
         {
-            if (_displayConsole)
-            {
-                
+            if (displayConsole)
+            {                
                 spriteBatch.Begin();
                 //top left corner
                 consoleSpriteSheet.spriteNumber = 0;
@@ -142,10 +166,17 @@ namespace AshTechEngine
 
 
                 //text
-                Fonts.DrawString(spriteBatch, "console", 22, "center center", consoleRectangle, Fonts.Alignment.CenterCenter, Color.White);
                 Fonts.DrawString(spriteBatch, "console", 22, "top left", consoleRectangle, Fonts.Alignment.TopLeft, Color.White);
                 Fonts.DrawString(spriteBatch, "console", 22, "top center", consoleRectangle, Fonts.Alignment.TopCenter, Color.White);
                 Fonts.DrawString(spriteBatch, "console", 22, "top right", consoleRectangle, Fonts.Alignment.TopRight, Color.White);
+
+                Fonts.DrawString(spriteBatch, "console", 22, "center left", consoleRectangle, Fonts.Alignment.CenterLeft, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "center center", consoleRectangle, Fonts.Alignment.CenterCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "center right", consoleRectangle, Fonts.Alignment.CenterRight, Color.White);
+
+                Fonts.DrawString(spriteBatch, "console", 22, "bottom left", consoleRectangle, Fonts.Alignment.BottomLeft, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "bottom center", consoleRectangle, Fonts.Alignment.BottomCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "bottom right", consoleRectangle, Fonts.Alignment.BottomRight, Color.White);
 
                 spriteBatch.End();
             }

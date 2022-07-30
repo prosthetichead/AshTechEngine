@@ -54,6 +54,8 @@ namespace AshTechEngine.Input
         public string actionId;
         public string actionName;
 
+        public bool hiddenAction;
+
         public List<GamePadButtons> gamePadButtons = new List<GamePadButtons>();
         public List<Keys> keyboardKeys = new List<Keys>();
         public List<MouseButtons> mouseButtons = new List<MouseButtons>();
