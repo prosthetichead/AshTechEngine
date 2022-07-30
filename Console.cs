@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FontStashSharp;
 
 namespace AshTechEngine
 {
@@ -39,7 +40,7 @@ namespace AshTechEngine
         public static bool displayConsole { get { return _displayConsole; } set { _displayConsole = value; startAnimating = true; } }
 
         public static Rectangle PositionSize = new Rectangle(200, 0, 800, 250);
-        public static int animationSpeed = 5;
+        public static int animationSpeed = 1;
         private static Rectangle consoleRectangle = new Rectangle(0, 0, 800, 0);
 
         internal static void LoadContent(GraphicsDevice graphicsDevice)
@@ -47,6 +48,7 @@ namespace AshTechEngine
             consoleTexture = Texture2D.FromFile(graphicsDevice, "Content/sprites/AshTechConsole.png");
             consoleSpriteSheet = new SpriteSheet(16,16);
             consoleSpriteSheet.SetTexture(consoleTexture);
+            
         }
 
         public static void WriteLine(string str)
@@ -137,6 +139,14 @@ namespace AshTechEngine
                 //bottom right corner
                 consoleSpriteSheet.spriteNumber = 8;
                 consoleSpriteSheet.Draw(spriteBatch, new Vector2(consoleRectangle.X  + consoleRectangle.Width, consoleRectangle.Y + consoleRectangle.Height), new Vector2(16, 16), 0, Color.White, SpriteEffects.None);
+
+
+                //text
+                Fonts.DrawString(spriteBatch, "console", 22, "center center", consoleRectangle, Fonts.Alignment.CenterCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "top left", consoleRectangle, Fonts.Alignment.TopLeft, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "top center", consoleRectangle, Fonts.Alignment.TopCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "top right", consoleRectangle, Fonts.Alignment.TopRight, Color.White);
+
                 spriteBatch.End();
             }
         }
