@@ -38,8 +38,11 @@ namespace AshTechEngine
 
         private static SpriteSheet consoleSpriteSheet;
         private static Texture2D consoleTexture;
-        private static List<ConsoleLine> _consoleLines;
-        internal static List<ConsoleLine> consoleLines { get { return _consoleLines; } }
+
+        private static List<ConsoleLine> consoleLines;
+        private static string consoleTestLine = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
+        private static int textSize = 25;
+        private static int textPadding = 5;
 
 
         private static int animationSpeed = 20;
@@ -67,8 +70,9 @@ namespace AshTechEngine
             } 
         }
 
-        public static Rectangle PositionSize = new Rectangle(200, 0, 800, 250);        
-        private static Rectangle consoleRectangle = new Rectangle(0, 0, 800, 0);
+        private static Rectangle PositionSize = new Rectangle(200, 0, 800, 250);        
+        private static Rectangle consoleRectangle = new Rectangle(200, 0, 800, 0);
+        
 
         internal static void LoadContent(GraphicsDevice graphicsDevice)
         {                
@@ -126,7 +130,9 @@ namespace AshTechEngine
         internal static void Draw(SpriteBatch spriteBatch)
         {
             if (displayConsole)
-            {                
+            {
+                Rectangle textArea = new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + textPadding, (consoleRectangle.Width - (textPadding*2)), (consoleRectangle.Height - (textPadding * 2)));
+
                 spriteBatch.Begin();
                 //top left corner
                 consoleSpriteSheet.spriteNumber = 0;
@@ -166,17 +172,17 @@ namespace AshTechEngine
 
 
                 //text
-                Fonts.DrawString(spriteBatch, "console", 22, "top left", consoleRectangle, Fonts.Alignment.TopLeft, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "top center", consoleRectangle, Fonts.Alignment.TopCenter, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "top right", consoleRectangle, Fonts.Alignment.TopRight, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "top left", textArea, Fonts.Alignment.TopLeft, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "top center", textArea, Fonts.Alignment.TopCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "top right", textArea, Fonts.Alignment.TopRight, Color.White);
 
-                Fonts.DrawString(spriteBatch, "console", 22, "center left", consoleRectangle, Fonts.Alignment.CenterLeft, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "center center", consoleRectangle, Fonts.Alignment.CenterCenter, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "center right", consoleRectangle, Fonts.Alignment.CenterRight, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "center left", textArea, Fonts.Alignment.CenterLeft, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "center center", textArea, Fonts.Alignment.CenterCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "center right", textArea, Fonts.Alignment.CenterRight, Color.White);
 
-                Fonts.DrawString(spriteBatch, "console", 22, "bottom left", consoleRectangle, Fonts.Alignment.BottomLeft, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "bottom center", consoleRectangle, Fonts.Alignment.BottomCenter, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "bottom right", consoleRectangle, Fonts.Alignment.BottomRight, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "bottom left", textArea, Fonts.Alignment.BottomLeft, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "bottom center", textArea, Fonts.Alignment.BottomCenter, Color.White);
+                Fonts.DrawString(spriteBatch, "console", 22, "bottom right", textArea, Fonts.Alignment.BottomRight, Color.White);
 
                 spriteBatch.End();
             }

@@ -49,6 +49,18 @@ namespace AshTechEngine
             fontSystems.Add(fontName, fontSystem);
         }
 
+        public static Vector2 MeasureString(string fontName, int fontSize, string text, Vector2? scale = null, float characterSpacing = 0, float lineSpacing = 0)
+        {
+            if (fontSystems.TryGetValue(fontName, out var fontSystem))
+            {
+                SpriteFontBase font = fontSystem.GetFont(fontSize);
+                Vector2 stringSize = font.MeasureString(text, scale, characterSpacing, lineSpacing);
+                return stringSize;
+            }
+
+            return Vector2.Zero;
+        }
+
         public static void DrawString(SpriteBatch spriteBatch, string fontName, int fontSize, string text, Vector2 position, Color color,
                                       Vector2? scale = null, float rotation = 0, Vector2 origin = default, float layerDepth = 0, float characterSpacing = 0, float lineSpacing = 0)
         {
@@ -75,7 +87,7 @@ namespace AshTechEngine
             if (fontSystems.TryGetValue(fontName, out var fontSystem))
             {
                 SpriteFontBase font = fontSystem.GetFont(fontSize);
-                Vector2 stringSize = font.MeasureString(text);
+                Vector2 stringSize = font.MeasureString(text, scale, characterSpacing, lineSpacing);
 
                 if(alignment == Alignment.TopLeft)
                 {
