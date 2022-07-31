@@ -19,6 +19,18 @@ namespace AshTechEngine
         {
             public string lineText { get; set; }    
             public LineType lineType { get; set; }
+            public DateTime dateTime { get; set; }
+
+            public ConsoleLine()
+            {
+                dateTime = DateTime.Now;
+            }
+            public ConsoleLine(string lineText, LineType lineType)
+            {
+                this.lineText = lineText;
+                this.lineType = lineType;
+                dateTime = DateTime.Now;
+            }
         }
 
         public enum LineType
@@ -39,15 +51,20 @@ namespace AshTechEngine
         private static SpriteSheet consoleSpriteSheet;
         private static Texture2D consoleTexture;
 
-        private static List<ConsoleLine> consoleLines;
+        private static List<ConsoleLine> consoleLines = new List<ConsoleLine>();
         private static string consoleTestLine = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
-        private static int textSize = 25;
-        private static int textPadding = 5;
+        private static int textPadding = 10;
+        private static int lineHeight = 0;
+        private static int fontSize = 19;
 
-
-        private static int animationSpeed = 20;
+        private static int animationSpeed = 18;
+        private static int timeSinceCursorFlash = 0;
+        private static int timeSinceCursorSpeed = 25;
+        private static bool displayCursor;
+        private static string cursor = "|";
         private static bool startAnimating = false;
         private static ConsoleState consoleState = ConsoleState.closed;
+
         public static bool displayConsole { 
             get { 
                 if(consoleState == ConsoleState.closed || (startAnimating == true && consoleState == ConsoleState.opening) ) //extra or rule stops console flashing incorect position
@@ -70,8 +87,8 @@ namespace AshTechEngine
             } 
         }
 
-        private static Rectangle PositionSize = new Rectangle(200, 0, 800, 250);        
-        private static Rectangle consoleRectangle = new Rectangle(200, 0, 800, 0);
+        public static Rectangle PositionSize = new Rectangle(50, 0, 900, 350);        
+        private static Rectangle consoleRectangle = new Rectangle(0, 0, 0, 0);
         
 
         internal static void LoadContent(GraphicsDevice graphicsDevice)
@@ -79,17 +96,22 @@ namespace AshTechEngine
             consoleTexture = Texture2D.FromFile(graphicsDevice, "Content/sprites/AshTechConsole.png");
             consoleSpriteSheet = new SpriteSheet(16,16);
             consoleSpriteSheet.SetTexture(consoleTexture);
-            
+
+            ConsoleLine consoleLine = new ConsoleLine() { lineType = LineType.normal, lineText = "AshTechEngine Console <(^.^)>" };
+            consoleLines.Add(consoleLine);
+            consoleLine = new ConsoleLine() { lineType = LineType.normal, lineText = "== enter ? for list of avalable commands ==" };
+            consoleLines.Add(consoleLine);
+
         }
 
         public static void WriteLine(string str)
         {
             WriteLine(LineType.normal, str);
         }
-
         public static void WriteLine(LineType lineType, string str)
         {
-            ConsoleLine _consoleLines = new ConsoleLine() { lineType = lineType, lineText = str };
+            ConsoleLine consoleLine = new ConsoleLine() { lineType = lineType, lineText = str };
+            consoleLines.Add(consoleLine);
             Debug.WriteLine(str);
         }
 
@@ -131,7 +153,23 @@ namespace AshTechEngine
         {
             if (displayConsole)
             {
-                Rectangle textArea = new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + textPadding, (consoleRectangle.Width - (textPadding*2)), (consoleRectangle.Height - (textPadding * 2)));
+                timeSinceCursorFlash++;
+                if(timeSinceCursorFlash >= timeSinceCursorSpeed)
+                {
+                    timeSinceCursorFlash = 0;
+                    displayCursor = !displayCursor;
+                }
+
+                if (lineHeight == 0)
+                {
+                    var measureString = Fonts.MeasureString("console", fontSize, consoleTestLine);
+                    lineHeight = (int)measureString.Y ;
+
+                }
+                //Rectangle textArea = new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + textPadding, (consoleRectangle.Width - (textPadding*2)), (consoleRectangle.Height - (textPadding * 2)));
+                int numberOfLines = MathHelper.Max(((consoleRectangle.Height - textPadding*2) / lineHeight)-1, 0);
+                
+                
 
                 spriteBatch.Begin();
                 //top left corner
@@ -170,19 +208,14 @@ namespace AshTechEngine
                 consoleSpriteSheet.spriteNumber = 8;
                 consoleSpriteSheet.Draw(spriteBatch, new Vector2(consoleRectangle.X  + consoleRectangle.Width, consoleRectangle.Y + consoleRectangle.Height), new Vector2(16, 16), 0, Color.White, SpriteEffects.None);
 
+                int lineCount = numberOfLines;
+                for (int i = consoleLines.Count - 1; i >= 0 && i >= (consoleLines.Count - 1) - numberOfLines; i--)
+                {
+                    Fonts.DrawString(spriteBatch, "console", fontSize, consoleLines[i].lineText, new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + (lineHeight * lineCount), consoleRectangle.Width - (textPadding*2), lineHeight) , Fonts.Alignment.CenterLeft, Color.White);
+                    lineCount--;
+                }
 
-                //text
-                Fonts.DrawString(spriteBatch, "console", 22, "top left", textArea, Fonts.Alignment.TopLeft, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "top center", textArea, Fonts.Alignment.TopCenter, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "top right", textArea, Fonts.Alignment.TopRight, Color.White);
-
-                Fonts.DrawString(spriteBatch, "console", 22, "center left", textArea, Fonts.Alignment.CenterLeft, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "center center", textArea, Fonts.Alignment.CenterCenter, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "center right", textArea, Fonts.Alignment.CenterRight, Color.White);
-
-                Fonts.DrawString(spriteBatch, "console", 22, "bottom left", textArea, Fonts.Alignment.BottomLeft, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "bottom center", textArea, Fonts.Alignment.BottomCenter, Color.White);
-                Fonts.DrawString(spriteBatch, "console", 22, "bottom right", textArea, Fonts.Alignment.BottomRight, Color.White);
+                Fonts.DrawString(spriteBatch, "console", fontSize, ">" + "This is a Command Text Entry" + (displayCursor ? cursor : ""), new Vector2(consoleRectangle.X + textPadding, consoleRectangle.Height - (lineHeight+lineHeight/2)), Color.LimeGreen);
 
                 spriteBatch.End();
             }
