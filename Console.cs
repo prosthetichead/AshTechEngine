@@ -15,11 +15,11 @@ namespace AshTechEngine
     public static class Console
     {
 
-        internal class ConsoleLine
+        public class ConsoleLine
         {
-            public string lineText { get; set; }    
+            public string lineText { get; set; }
             public LineType lineType { get; set; }
-            public DateTime dateTime { get; set; }
+            public DateTime dateTime { get; }
 
             public ConsoleLine()
             {
@@ -31,6 +31,41 @@ namespace AshTechEngine
                 this.lineType = lineType;
                 dateTime = DateTime.Now;
             }
+
+            public Color[] lineColor
+            {
+                get
+                {
+                    switch (lineType)
+                    {
+                        case LineType.normal:
+                            return new Color[] { Color.LightGray };
+                        case LineType.warning:
+                            return new Color[] { Color.MonoGameOrange };
+                        case LineType.error:
+                            return new Color[] { Color.IndianRed };
+                        case LineType.command:
+                            return new Color[] { Color.LimeGreen };
+                        default:
+                            return new Color[] { Color.LightGray };
+                    }
+                }
+            }
+        }
+
+        public class ConsoleCommand
+        {
+            public string command { get; set; }
+            public string description { get; set; }
+            public string helpText { get; set; }
+            public Action<string[]> commandAction { get; set; }
+            public ConsoleCommand(string command, string description, string helpText, Action<string[]> commandAction)
+            {
+                this.command = command;
+                this.description = description;
+                this.helpText = helpText;
+                this.commandAction = commandAction;
+            }
         }
 
         public enum LineType
@@ -38,6 +73,7 @@ namespace AshTechEngine
             normal,
             warning,
             error,
+            command
         }
 
         private enum ConsoleState
@@ -48,10 +84,14 @@ namespace AshTechEngine
             closing,
         }
 
+
+
         private static SpriteSheet consoleSpriteSheet;
         private static Texture2D consoleTexture;
 
         private static List<ConsoleLine> consoleLines = new List<ConsoleLine>();
+        private static List<ConsoleCommand> consoleCommands = new List<ConsoleCommand>();
+
         private static string consoleTestLine = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
         private static int textPadding = 10;
         private static int lineHeight = 0;
@@ -62,8 +102,11 @@ namespace AshTechEngine
         private static int timeSinceCursorSpeed = 25;
         private static bool displayCursor;
         private static string cursor = "|";
+        private static string commandString = "";
         private static bool startAnimating = false;
         private static ConsoleState consoleState = ConsoleState.closed;
+
+        private static bool textInput { get { if (consoleState == ConsoleState.open) return true; else return false; } }
 
         public static bool displayConsole { 
             get { 
@@ -82,8 +125,7 @@ namespace AshTechEngine
                 {
                     startAnimating = true;
                     consoleState = ConsoleState.opening;                    
-                }
-                
+                }                
             } 
         }
 
@@ -91,7 +133,7 @@ namespace AshTechEngine
         private static Rectangle consoleRectangle = new Rectangle(0, 0, 0, 0);
         
 
-        internal static void LoadContent(GraphicsDevice graphicsDevice)
+        internal static void LoadContent(GraphicsDevice graphicsDevice, Game game )
         {                
             consoleTexture = Texture2D.FromFile(graphicsDevice, "Content/sprites/AshTechConsole.png");
             consoleSpriteSheet = new SpriteSheet(16,16);
@@ -101,7 +143,95 @@ namespace AshTechEngine
             consoleLines.Add(consoleLine);
             consoleLine = new ConsoleLine() { lineType = LineType.normal, lineText = "== enter ? for list of avalable commands ==" };
             consoleLines.Add(consoleLine);
+            
+            //setup listener for text input
+            game.Window.TextInput += Window_TextInput;
 
+            //setup default commands
+            consoleCommands.Add(new ConsoleCommand("?", "This Help Text. [ ? [page number] ] to get additinal pages", "Help! I need somebody. Help! Not just anybody. Help! You know I need someone. Help!", a => {
+                
+                int page = 1;
+                int limitPerPage = 10;
+                int maxPages = (int)Math.Ceiling((double)consoleCommands.Count / limitPerPage) ;
+
+                if (a.Length > 0)
+                {
+                    if( int.TryParse(a[0], out page))
+                    {
+                        page = Math.Clamp(page, 0, maxPages);
+                    }
+                    else
+                    {
+                        WriteLine(LineType.error, "error parsing page number argument  " + a[0]);
+                    }
+                }
+                WriteLine(" -- Commands Page " + (page) + " / " + maxPages + " -- ");
+                foreach (var command in consoleCommands.Skip((page - 1) * limitPerPage).Take(limitPerPage).ToList())
+                {                    
+                    WriteLine("[ " + command.command + " ]  ->  " + command.description);                   
+                }
+                WriteLine(" -- for additonal command help enter COMMAND ? -- ");
+            }));
+
+            consoleCommands.Add(new ConsoleCommand("cla", "Clear the console window", "This command simply clears the console window of all previous lines", a => {
+                consoleLines.Clear();                
+            }));
+
+        }
+
+        private static void Window_TextInput(object sender, TextInputEventArgs e)
+        {
+            if (textInput)
+            {
+                char character = e.Character;
+                var key = e.Key;
+                if (key == Microsoft.Xna.Framework.Input.Keys.Back)
+                {
+                    if(commandString.Length > 0)
+                        commandString = commandString.Remove(commandString.Length - 1);
+                }
+                else if(key == Microsoft.Xna.Framework.Input.Keys.Enter)
+                {
+                    WriteLine(LineType.command, ">"+commandString);
+                    ExecuteCommandString();                    
+                    commandString = "";
+                }
+                else if(key != Microsoft.Xna.Framework.Input.Keys.OemTilde)
+                {
+                    commandString += character;
+                }
+            }
+        }
+
+        public static void AddConsoleCommand(ConsoleCommand consoleCommand)
+        {
+            consoleCommands.Add(consoleCommand);
+        }
+
+        private static void ExecuteCommandString()
+        {
+            var commandArray = commandString.Trim().Split(' ');
+            string command = "";
+            if (commandArray.Length > 0)
+            {
+                command = commandArray[0];
+                commandArray = commandArray.Skip(1).ToArray();
+                if ( consoleCommands.Any(w=>w.command == command))
+                {
+                    var consoleCommand = consoleCommands.FirstOrDefault(w => w.command == command);
+                    //get the arguments if there is any check if the first one is a ? if it is display the help dont execute
+                    if(commandArray.Length > 0) 
+                    {
+                        if (commandArray[0] == "?") { WriteLine(consoleCommand.helpText); return; }                        
+                    }
+                    //Execute the Command
+                    consoleCommand.commandAction(commandArray);
+                }
+                else
+                {
+                    WriteLine(LineType.error, "Uknown Command. Enter ? for available commands.");
+                }
+            }
         }
 
         public static void WriteLine(string str)
@@ -211,11 +341,13 @@ namespace AshTechEngine
                 int lineCount = numberOfLines;
                 for (int i = consoleLines.Count - 1; i >= 0 && i >= (consoleLines.Count - 1) - numberOfLines; i--)
                 {
-                    Fonts.DrawString(spriteBatch, "console", fontSize, consoleLines[i].lineText, new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + (lineHeight * lineCount), consoleRectangle.Width - (textPadding*2), lineHeight) , Fonts.Alignment.CenterLeft, Color.White);
+                    var line = consoleLines[i];
+                    
+                    Fonts.DrawString(spriteBatch, "console", fontSize, consoleLines[i].lineText, new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + (lineHeight * lineCount), consoleRectangle.Width - (textPadding*2), lineHeight) , Fonts.Alignment.CenterLeft, line.lineColor );
                     lineCount--;
                 }
 
-                Fonts.DrawString(spriteBatch, "console", fontSize, ">" + "This is a Command Text Entry" + (displayCursor ? cursor : ""), new Vector2(consoleRectangle.X + textPadding, consoleRectangle.Height - (lineHeight+lineHeight/2)), Color.LimeGreen);
+                Fonts.DrawString(spriteBatch, "console", fontSize, ">" + commandString + (displayCursor ? cursor : ""), new Vector2(consoleRectangle.X + textPadding, consoleRectangle.Height - (lineHeight+lineHeight/2)), Color.LimeGreen);
 
                 spriteBatch.End();
             }

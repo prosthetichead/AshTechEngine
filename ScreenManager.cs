@@ -122,7 +122,18 @@ namespace AshTechEngine
                 screen.LoadContent();
             }
 
-            Console.LoadContent(GraphicsDevice);
+            //setup the console
+            Console.LoadContent(GraphicsDevice, Game);
+
+            //add some commands to the console
+            Console.AddConsoleCommand(new Console.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { Console.WriteLine(Console.LineType.warning, frameRate.framerate + " FPS");}));
+
+            Console.AddConsoleCommand(new Console.ConsoleCommand("nic", "bla bla", "bla bla bla", a => {
+                Console.WriteLine("hi nicole");
+                Console.WriteLine(Console.LineType.error, "I love you");
+
+            }));
+
         }
 
         /// <summary>

@@ -32,9 +32,8 @@ namespace AshTechEngine.Input
             this.game = game;
 
             inputActions = new Dictionary<string, InputAction>();
-        }
 
-
+        }               
 
         ///<summary>
         ///Updates the keyboard and gamepad control states.
@@ -55,9 +54,7 @@ namespace AshTechEngine.Input
             currentMouseState = Mouse.GetState();
 
             previousMouseScreenPos = currentMouseScreenPos;
-            currentMouseScreenPos = currentMouseState.Position;
-
-
+            currentMouseScreenPos = currentMouseState.Position;            
         }
 
         /// <summary>
