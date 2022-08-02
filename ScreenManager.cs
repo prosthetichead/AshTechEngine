@@ -123,17 +123,11 @@ namespace AshTechEngine
             }
 
             //setup the console
-            Console.LoadContent(GraphicsDevice, Game);
+            ConsoleAsh.LoadContent(GraphicsDevice, Game);
 
-            //add some commands to the console
-            Console.AddConsoleCommand(new Console.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { Console.WriteLine(Console.LineType.warning, frameRate.framerate + " FPS");}));
-
-            Console.AddConsoleCommand(new Console.ConsoleCommand("nic", "bla bla", "bla bla bla", a => {
-                Console.WriteLine("hi nicole");
-                Console.WriteLine(Console.LineType.error, "I love you");
-
-            }));
-
+            //add some commands to the console 
+            ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { ConsoleAsh.WriteLine(ConsoleAsh.LineType.warning, frameRate.framerate + " FPS");}));
+            
         }
 
         /// <summary>
@@ -160,11 +154,11 @@ namespace AshTechEngine
         {   
             input.Update();
 
-            Console.Update();
+            ConsoleAsh.Update();
 
             //check for input ` to open and close the console
             if(input.IsKeyTriggered(Microsoft.Xna.Framework.Input.Keys.OemTilde)){
-                Console.displayConsole = !Console.displayConsole;
+                ConsoleAsh.displayConsole = !ConsoleAsh.displayConsole;
             }
             
             screensToUpdate.Clear();
@@ -217,7 +211,7 @@ namespace AshTechEngine
             }
 
             //draw the console
-            Console.Draw(SpriteBatch);
+            ConsoleAsh.Draw(SpriteBatch);
         }
 
         /// <summary>

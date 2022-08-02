@@ -4,15 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FontStashSharp;
+using Microsoft.Xna.Framework.Input;
 
 namespace AshTechEngine
 {
-
-
-    public static class Console
+    public static class ConsoleAsh
     {
 
         public class ConsoleLine
@@ -41,9 +37,9 @@ namespace AshTechEngine
                         case LineType.normal:
                             return new Color[] { Color.LightGray };
                         case LineType.warning:
-                            return new Color[] { Color.MonoGameOrange };
+                            return new Color[] { Color.Orange };
                         case LineType.error:
-                            return new Color[] { Color.IndianRed };
+                            return new Color[] { Color.MonoGameOrange };
                         case LineType.command:
                             return new Color[] { Color.LimeGreen };
                         default:
@@ -103,6 +99,8 @@ namespace AshTechEngine
         private static bool displayCursor;
         private static string cursor = "|";
         private static string commandString = "";
+        private static List<string> previousCommandStrings = new List<string>();
+        private static int previousCommandIndex = 0;
         private static bool startAnimating = false;
         private static ConsoleState consoleState = ConsoleState.closed;
 
@@ -146,6 +144,7 @@ namespace AshTechEngine
             
             //setup listener for text input
             game.Window.TextInput += Window_TextInput;
+            game.Window.KeyUp += Window_KeyUp;
 
             //setup default commands
             consoleCommands.Add(new ConsoleCommand("?", "This Help Text. [ ? [page number] ] to get additinal pages", "Help! I need somebody. Help! Not just anybody. Help! You know I need someone. Help!", a => {
@@ -173,10 +172,38 @@ namespace AshTechEngine
                 WriteLine(" -- for additonal command help enter COMMAND ? -- ");
             }));
 
-            consoleCommands.Add(new ConsoleCommand("cla", "Clear the console window", "This command simply clears the console window of all previous lines", a => {
+            consoleCommands.Add(new ConsoleCommand("clr", "Clear the console window", "Simply clears the console window of all previous lines", a => {
                 consoleLines.Clear();                
             }));
 
+        }
+
+        private static void Window_KeyUp(object sender, InputKeyEventArgs e)
+        {
+            if (textInput)
+            {
+                var key = e.Key;
+                if (key == Keys.Up)
+                {
+                    if (previousCommandStrings.Count > 0)
+                    {
+                        previousCommandIndex++;
+                        previousCommandIndex = Math.Clamp(previousCommandIndex, 0, previousCommandStrings.Count-1);
+                        string newCommandString = previousCommandStrings[previousCommandIndex];
+                        commandString = newCommandString;
+                    }
+                }
+                else if (key == Keys.Down)
+                {
+                    if (previousCommandStrings.Count > 0)
+                    {
+                        previousCommandIndex--;
+                        previousCommandIndex = Math.Clamp(previousCommandIndex, 0, previousCommandStrings.Count-1);
+                        string newCommandString = previousCommandStrings[previousCommandIndex];
+                        commandString = newCommandString;
+                    }
+                }
+            }
         }
 
         private static void Window_TextInput(object sender, TextInputEventArgs e)
@@ -185,18 +212,24 @@ namespace AshTechEngine
             {
                 char character = e.Character;
                 var key = e.Key;
-                if (key == Microsoft.Xna.Framework.Input.Keys.Back)
+                if (key == Keys.Back)
                 {
                     if(commandString.Length > 0)
                         commandString = commandString.Remove(commandString.Length - 1);
                 }
-                else if(key == Microsoft.Xna.Framework.Input.Keys.Enter)
+                else if(key == Keys.Enter)
                 {
-                    WriteLine(LineType.command, ">"+commandString);
-                    ExecuteCommandString();                    
-                    commandString = "";
+                    if (commandString.Length > 0)
+                    {
+                        previousCommandIndex = -1;
+                        WriteLine(LineType.command, ">" + commandString);
+                        ExecuteCommandString();
+                        previousCommandStrings.Insert(0,commandString);
+                        commandString = "";
+
+                    }
                 }
-                else if(key != Microsoft.Xna.Framework.Input.Keys.OemTilde)
+                else if(key != Keys.OemTilde)
                 {
                     commandString += character;
                 }
