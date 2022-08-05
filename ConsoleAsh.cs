@@ -91,7 +91,7 @@ namespace AshTechEngine
         private static string consoleTestLine = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
         private static int textPadding = 10;
         private static int lineHeight = 0;
-        private static int fontSize = 19;
+        private static int fontSize = 16; 
 
         private static int animationSpeed = 18;
         private static int timeSinceCursorFlash = 0;

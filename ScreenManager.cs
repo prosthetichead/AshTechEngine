@@ -114,13 +114,15 @@ namespace AshTechEngine
         {
             // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
-            
+
+            //load the default console font
+            Fonts.AddBitmapFont(GraphicsDevice, "console", "Content/fonts/monogram.fnt");
+
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
             {
                 screen.LoadContent();
-            }
+            }           
 
             //setup the console
             ConsoleAsh.LoadContent(GraphicsDevice, Game);
