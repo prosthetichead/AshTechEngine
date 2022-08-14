@@ -31,10 +31,9 @@ namespace AshTechEngine
 
         IGraphicsDeviceService graphicsDeviceService;
         
-        ContentManager content;
+        ContentLoader content;
         SpriteBatch spriteBatch;
         FrameRate frameRate;
-
 
         
         /// <summary>
@@ -74,7 +73,7 @@ namespace AshTechEngine
         /// <summary>
         /// A content manager!
         /// </summary>
-        public ContentManager Content
+        public ContentLoader Content
         {
             get { return content; }
         }
@@ -93,17 +92,16 @@ namespace AshTechEngine
             this.graphics = graphics; // we need the graphics device manager 
             
             input = new InputManager(game);
-            content = new ContentManager(game.Services, "Content");
-
-            graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(
-                                                        typeof(IGraphicsDeviceService));
-
-            frameRate = new FrameRate(5);
-
+            
+            graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(typeof(IGraphicsDeviceService));
             if (graphicsDeviceService == null)
                 throw new InvalidOperationException("No graphics device service.");
 
+            frameRate = new FrameRate(5);            
+
             gameSettings = new GameSettings(this);
+
+            content = new ContentLoader(GraphicsDevice);
         }
 
 
@@ -116,7 +114,13 @@ namespace AshTechEngine
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //load the default console font
-            Fonts.AddBitmapFont(GraphicsDevice, "console", "Content/fonts/monogram.fnt");
+            Texture2D fontTexture = content.Texture2DFromResource(AshTechResources.ResourceManager, "monogram_png");
+
+            //var names = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();
+            //Texture2D texture = new Texture2D(GraphicsDevice, Resources.monogram_png).GetData(Resources.monogram_png);
+            Fonts.AddBitmapFont("console", AshTechResources.monogram_fnt, fontTexture, Point.Zero);
+
+
 
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
@@ -138,7 +142,7 @@ namespace AshTechEngine
         protected override void UnloadContent()
         {
             // Unload content belonging to the screen manager.
-            content.Unload();
+            //content.Unload();
 
             // Tell each of the screens to unload their content, if they have any
             foreach (Screen screen in screens)

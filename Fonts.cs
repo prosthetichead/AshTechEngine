@@ -42,9 +42,14 @@ namespace AshTechEngine
         {
             var fntData = File.ReadAllText(fontPath);
             SpriteFontBase font = StaticSpriteFont.FromBMFont(fntData, fileName => File.OpenRead(fileName), graphicsDevice);
-
             bitmapFonts.Add(fontName,font);
-        }        
+        }
+
+        public static void AddBitmapFont(string fontName, string fontData, Texture2D fontTexture, Point offset)
+        {
+            SpriteFontBase font = StaticSpriteFont.FromBMFont(fontData, filenname => new TextureWithOffset(fontTexture, offset));
+            bitmapFonts.Add(fontName, font);
+        }
 
         public static void AddFont(string fontName, params string[] fontPath)
         {
@@ -63,7 +68,7 @@ namespace AshTechEngine
             fontSystems.Add(fontName, fontSystem);
         }
 
-        private static SpriteFontBase GetSpriteFontBase(string fontName, int fontSize)
+        public static SpriteFontBase GetSpriteFontBase(string fontName, int fontSize = 12)
         {
             if (fontSystems.TryGetValue(fontName, out var fontSystem))
             {
