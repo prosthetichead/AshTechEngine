@@ -61,35 +61,35 @@ namespace AshTechEngine {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to info face=&quot;m5x7&quot; size=-16 bold=0 italic=0 charset=&quot;&quot; unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=1,1 outline=0
-        ///common lineHeight=13 base=11 scaleW=256 scaleH=256 pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0
-        ///page id=0 file=&quot;Content/fonts/monogram.png&quot;
-        ///chars count=319
-        ///char id=32   x=6     y=63    width=3     height=1     xoffset=-1    yoffset=12    xadvance=5     page=0  chnl=15
-        ///char id=33   x=254   y=8     width=1     height=7     xoffset=0     yoffset=4     xadvance=2  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string monogram_fnt {
-            get {
-                return ResourceManager.GetString("monogram_fnt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] monogram_png {
+        internal static byte[] AshTechConsole_png {
             get {
-                object obj = ResourceManager.GetObject("monogram_png", resourceCulture);
+                object obj = ResourceManager.GetObject("AshTechConsole_png", resourceCulture);
                 return ((byte[])(obj));
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to info face=&quot;PixelLocale v.1.4&quot; size=-9 bold=0 italic=0 charset=&quot;&quot; unicode=1 stretchH=100 smooth=0 aa=1 padding=0,0,0,0 spacing=1,1 outline=0
+        ///common lineHeight=19 base=14 scaleW=310 scaleH=310 pages=1 packed=0 alphaChnl=0 redChnl=4 greenChnl=4 blueChnl=4
+        ///page id=0 file=&quot;pixellocale_0.png&quot;
+        ///chars count=1454
+        ///char id=-1   x=138   y=243   width=5     height=7     xoffset=0     yoffset=7     xadvance=6     page=0  chnl=15
+        ///char id=32   x=143   y=291   width=3     height=1     xoffset=-1    yoffset=18    xadvanc [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string pixellocale_fnt {
+            get {
+                return ResourceManager.GetString("pixellocale_fnt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] monogram_ttf {
+        internal static byte[] pixellocale_png {
             get {
-                object obj = ResourceManager.GetObject("monogram_ttf", resourceCulture);
+                object obj = ResourceManager.GetObject("pixellocale_png", resourceCulture);
                 return ((byte[])(obj));
             }
         }

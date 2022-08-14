@@ -131,9 +131,9 @@ namespace AshTechEngine
         private static Rectangle consoleRectangle = new Rectangle(0, 0, 0, 0);
         
 
-        internal static void LoadContent(GraphicsDevice graphicsDevice, Game game )
+        internal static void LoadContent(ContentLoader content, Game game )
         {                
-            consoleTexture = Texture2D.FromFile(graphicsDevice, "Content/sprites/AshTechConsole.png");
+            consoleTexture = content.Texture2DFromResource(AshTechResources.ResourceManager, "AshTechConsole_png");
             consoleSpriteSheet = new SpriteSheet(16,16);
             consoleSpriteSheet.SetTexture(consoleTexture);
 

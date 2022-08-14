@@ -114,11 +114,11 @@ namespace AshTechEngine
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //load the default console font
-            Texture2D fontTexture = content.Texture2DFromResource(AshTechResources.ResourceManager, "monogram_png");
+            Texture2D fontTexture = content.Texture2DFromResource(AshTechResources.ResourceManager, "pixellocale_png");
 
             //var names = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();
             //Texture2D texture = new Texture2D(GraphicsDevice, Resources.monogram_png).GetData(Resources.monogram_png);
-            Fonts.AddBitmapFont("console", AshTechResources.monogram_fnt, fontTexture, Point.Zero);
+            Fonts.AddBitmapFont("console", AshTechResources.pixellocale_fnt, fontTexture, Point.Zero);
 
 
 
@@ -129,7 +129,7 @@ namespace AshTechEngine
             }           
 
             //setup the console
-            ConsoleAsh.LoadContent(GraphicsDevice, Game);
+            ConsoleAsh.LoadContent(Content, Game);
 
             //add some commands to the console 
             ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { ConsoleAsh.WriteLine(ConsoleAsh.LineType.warning, frameRate.framerate + " FPS");}));
