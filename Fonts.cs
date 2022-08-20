@@ -47,8 +47,11 @@ namespace AshTechEngine
 
         public static void AddBitmapFont(string fontName, string fontData, Texture2D fontTexture, Point offset)
         {
-            SpriteFontBase font = StaticSpriteFont.FromBMFont(fontData, filenname => new TextureWithOffset(fontTexture, offset));
-            bitmapFonts.Add(fontName, font);
+            if (!bitmapFonts.ContainsKey(fontName))
+            {
+                SpriteFontBase font = StaticSpriteFont.FromBMFont(fontData, filenname => new TextureWithOffset(fontTexture, offset));
+                bitmapFonts.Add(fontName, font);
+            }
         }
 
         public static void AddFont(string fontName, params string[] fontPath)
