@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using FontStashSharp;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AshTechEngine
 {
@@ -37,6 +36,20 @@ namespace AshTechEngine
             }
         }
 
+        public SpriteFontBase BitmapFontFromResource(System.Resources.ResourceManager rm, string fontName, string fontDataName, string fontTextureName, Point offset)
+        {
+            var spriteFontBase = Fonts.GetSpriteFontBase(fontName);
+            if(spriteFontBase == null) // font isnt in our font manager yet so lets add it then return it
+            {
+                var bytes = (byte[])rm.GetObject(fontTextureName);
+                var fontTexture = Texture2DFromBytes(bytes);
+                spriteFontBase = StaticSpriteFont.FromBMFont(rm.GetString(fontDataName), filenname => new TextureWithOffset(fontTexture, offset));
+
+                Fonts.AddSpriteFontBase(fontName, spriteFontBase);  //add it for next time
+            }
+            return spriteFontBase;
+        }
+
         public Texture2D Texture2DFromResource(System.Resources.ResourceManager rm,  string resourceName)
         {
             string fullName = rm.BaseName + "." + resourceName;
@@ -48,12 +61,18 @@ namespace AshTechEngine
             else
             {
                 var bytes = (byte[])rm.GetObject(resourceName);
-                using (var stream = new MemoryStream(bytes))
-                {
-                    var texture2d = Texture2D.FromStream(graphicsDevice, stream);
-                    texture2Ds.Add(fullName, texture2d);
-                    return texture2d;
-                }
+                var texture2d = Texture2DFromBytes(bytes);
+                texture2Ds.Add(fullName, texture2d);
+                return texture2d;
+            }
+        }
+
+        private Texture2D Texture2DFromBytes(byte[] bytes)
+        {
+            using (var stream = new MemoryStream(bytes))
+            {
+                var texture2d = Texture2D.FromStream(graphicsDevice, stream);
+                return texture2d;
             }
         }
     }

@@ -31,7 +31,7 @@ namespace AshTechEngine
 
         IGraphicsDeviceService graphicsDeviceService;
         
-        ContentLoader content;
+        ContentLoader contentLoader;
         SpriteBatch spriteBatch;
         FrameRate frameRate;
 
@@ -71,11 +71,12 @@ namespace AshTechEngine
         }
 
         /// <summary>
-        /// A content manager!
+        /// A content loader helper!
+        /// Load Content from Raw Files or Resorces RESX files 
         /// </summary>
-        public ContentLoader Content
+        public ContentLoader ContentLoader
         {
-            get { return content; }
+            get { return contentLoader; }
         }
 
         /// <summary>
@@ -101,7 +102,7 @@ namespace AshTechEngine
 
             gameSettings = new GameSettings(this);
 
-            content = new ContentLoader(GraphicsDevice);
+            contentLoader = new ContentLoader(GraphicsDevice);
         }
 
 
@@ -114,13 +115,7 @@ namespace AshTechEngine
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //load the default console font
-            Texture2D fontTexture = content.Texture2DFromResource(AshTechResources.ResourceManager, "pixellocale_png");
-
-            //var names = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();
-            //Texture2D texture = new Texture2D(GraphicsDevice, Resources.monogram_png).GetData(Resources.monogram_png);
-            Fonts.AddBitmapFont("console", AshTechResources.pixellocale_fnt, fontTexture, Point.Zero);
-
-
+            contentLoader.BitmapFontFromResource(AshTechResources.ResourceManager, "console", "pixellocale_fnt", "pixellocale_png", Point.Zero);
 
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
@@ -129,7 +124,7 @@ namespace AshTechEngine
             }           
 
             //setup the console
-            ConsoleAsh.LoadContent(Content, Game);
+            ConsoleAsh.LoadContent(ContentLoader, Game);
 
             //add some commands to the console 
             ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { ConsoleAsh.WriteLine(ConsoleAsh.LineType.warning, frameRate.framerate + " FPS");}));

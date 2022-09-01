@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,7 +9,7 @@ namespace AshTechEngine
     public static class Fonts
     {
         private static Dictionary<string, FontSystem> fontSystems;
-        private static Dictionary<string, SpriteFontBase> bitmapFonts;
+        private static Dictionary<string, SpriteFontBase> spriteFontBases;
 
 
         public enum Alignment
@@ -35,41 +30,49 @@ namespace AshTechEngine
         static Fonts()
         {
             fontSystems = new Dictionary<string, FontSystem>();
-            bitmapFonts = new Dictionary<string, SpriteFontBase>();
+            spriteFontBases = new Dictionary<string, SpriteFontBase>();
         }
 
-        public static void AddBitmapFont(GraphicsDevice graphicsDevice, string fontName, string fontPath)
+        internal static void AddSpriteFontBase(string fontName, SpriteFontBase spriteFontBase)
         {
-            var fntData = File.ReadAllText(fontPath);
-            SpriteFontBase font = StaticSpriteFont.FromBMFont(fntData, fileName => File.OpenRead(fileName), graphicsDevice);
-            bitmapFonts.Add(fontName,font);
-        }
-
-        public static void AddBitmapFont(string fontName, string fontData, Texture2D fontTexture, Point offset)
-        {
-            if (!bitmapFonts.ContainsKey(fontName))
+            if (!spriteFontBases.ContainsKey(fontName))
             {
-                SpriteFontBase font = StaticSpriteFont.FromBMFont(fontData, filenname => new TextureWithOffset(fontTexture, offset));
-                bitmapFonts.Add(fontName, font);
+                spriteFontBases.Add(fontName, spriteFontBase);
             }
         }
 
-        public static void AddFont(string fontName, params string[] fontPath)
-        {
-            FontSystemSettings fontSettings = new FontSystemSettings
-            {
-                KernelWidth = 2,
-                KernelHeight = 2,
-                FontResolutionFactor = 2,
-            };
+        //public static void AddBitmapFont(GraphicsDevice graphicsDevice, string fontName, string fontPath)
+        //{
+        //    var fntData = File.ReadAllText(fontPath);
+        //    SpriteFontBase font = StaticSpriteFont.FromBMFont(fntData, fileName => File.OpenRead(fileName), graphicsDevice);
+        //    bitmapFonts.Add(fontName, font);
+        //}
 
-            var fontSystem = new FontSystem(fontSettings);
+        //public static void AddBitmapFont(string fontName, string fontData, Texture2D fontTexture, Point offset)
+        //{
+        //    if (!bitmapFonts.ContainsKey(fontName))
+        //    {
+        //        SpriteFontBase font = StaticSpriteFont.FromBMFont(fontData, filenname => new TextureWithOffset(fontTexture, offset));
+        //        bitmapFonts.Add(fontName, font);
+        //    }
+        //}
 
-            foreach (string path in fontPath)
-                fontSystem.AddFont(File.ReadAllBytes(path));
+        //public static void AddFont(string fontName, params string[] fontPath)
+        //{
+        //    FontSystemSettings fontSettings = new FontSystemSettings
+        //    {
+        //        KernelWidth = 2,
+        //        KernelHeight = 2,
+        //        FontResolutionFactor = 2,
+        //    };
 
-            fontSystems.Add(fontName, fontSystem);
-        }
+        //    var fontSystem = new FontSystem(fontSettings);
+
+        //    foreach (string path in fontPath)
+        //        fontSystem.AddFont(File.ReadAllBytes(path));
+
+        //    fontSystems.Add(fontName, fontSystem);
+        //}
 
         public static SpriteFontBase GetSpriteFontBase(string fontName, int fontSize = 12)
         {
@@ -77,11 +80,10 @@ namespace AshTechEngine
             {
                 return fontSystem.GetFont(fontSize);
             }
-            else if(bitmapFonts.TryGetValue(fontName, out var bitmapFont))
+            else if(spriteFontBases.TryGetValue(fontName, out var bitmapFont))
             {
                 return bitmapFont;
             }
-
             return null;
         }
 
