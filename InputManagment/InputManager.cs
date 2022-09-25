@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine.Input
+namespace AshTechEngine.InputManagment
 {
     public class InputManager
     {
@@ -23,7 +23,7 @@ namespace AshTechEngine.Input
 
         private Point currentMouseScreenPos;
         private Point previousMouseScreenPos;
-               
+
 
         public Dictionary<string, InputAction> inputActions;
 
@@ -33,7 +33,7 @@ namespace AshTechEngine.Input
 
             inputActions = new Dictionary<string, InputAction>();
 
-        }               
+        }
 
         ///<summary>
         ///Updates the keyboard and gamepad control states.
@@ -54,7 +54,7 @@ namespace AshTechEngine.Input
             currentMouseState = Mouse.GetState();
 
             previousMouseScreenPos = currentMouseScreenPos;
-            currentMouseScreenPos = currentMouseState.Position;            
+            currentMouseScreenPos = currentMouseState.Position;
         }
 
         /// <summary>
@@ -136,15 +136,15 @@ namespace AshTechEngine.Input
             switch (gamePadKey)
             {
                 case GamePadButtons.Up:
-                    return (currentGamePadState.DPad.Up == ButtonState.Pressed);
+                    return currentGamePadState.DPad.Up == ButtonState.Pressed;
                 case GamePadButtons.Down:
-                    return (currentGamePadState.DPad.Down == ButtonState.Pressed);
+                    return currentGamePadState.DPad.Down == ButtonState.Pressed;
                 case GamePadButtons.Left:
-                    return (currentGamePadState.DPad.Left == ButtonState.Pressed);
+                    return currentGamePadState.DPad.Left == ButtonState.Pressed;
                 case GamePadButtons.Right:
-                    return (currentGamePadState.DPad.Right == ButtonState.Pressed);
+                    return currentGamePadState.DPad.Right == ButtonState.Pressed;
                 case GamePadButtons.LeftStickLeft:
-                    return (currentGamePadState.ThumbSticks.Left.X < (0 - analogLimit));
+                    return currentGamePadState.ThumbSticks.Left.X < 0 - analogLimit;
             }
             return false;
         }
@@ -154,15 +154,15 @@ namespace AshTechEngine.Input
             switch (mouseButton)
             {
                 case MouseButtons.LeftButton:
-                    return (currentMouseState.LeftButton == ButtonState.Pressed);
+                    return currentMouseState.LeftButton == ButtonState.Pressed;
                 case MouseButtons.RightButton:
-                    return (currentMouseState.RightButton == ButtonState.Pressed);
+                    return currentMouseState.RightButton == ButtonState.Pressed;
                 case MouseButtons.MiddleButton:
-                    return (currentMouseState.MiddleButton == ButtonState.Pressed);
+                    return currentMouseState.MiddleButton == ButtonState.Pressed;
                 case MouseButtons.ScrollWheelUp:
-                    return (currentMouseState.ScrollWheelValue > previousMouseState.ScrollWheelValue);
+                    return currentMouseState.ScrollWheelValue > previousMouseState.ScrollWheelValue;
                 case MouseButtons.ScrollWheelDown:
-                    return (currentMouseState.ScrollWheelValue < previousMouseState.ScrollWheelValue);
+                    return currentMouseState.ScrollWheelValue < previousMouseState.ScrollWheelValue;
             }
 
             return false;
@@ -217,7 +217,7 @@ namespace AshTechEngine.Input
 
         public bool IsKeyTriggered(Keys key)
         {
-            if ((currentKeyboardState.IsKeyDown(key)) && (!previousKeyboardState.IsKeyDown(key)))
+            if (currentKeyboardState.IsKeyDown(key) && !previousKeyboardState.IsKeyDown(key))
                 return true;
             else
                 return false;
@@ -228,15 +228,15 @@ namespace AshTechEngine.Input
             switch (mouseButton)
             {
                 case MouseButtons.LeftButton:
-                    return (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released);
+                    return currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released;
                 case MouseButtons.RightButton:
-                    return (currentMouseState.RightButton == ButtonState.Pressed && previousMouseState.RightButton == ButtonState.Released);
+                    return currentMouseState.RightButton == ButtonState.Pressed && previousMouseState.RightButton == ButtonState.Released;
                 case MouseButtons.MiddleButton:
-                    return (currentMouseState.MiddleButton == ButtonState.Pressed && previousMouseState.MiddleButton == ButtonState.Released);
+                    return currentMouseState.MiddleButton == ButtonState.Pressed && previousMouseState.MiddleButton == ButtonState.Released;
                 case MouseButtons.ScrollWheelUp:
-                    return (currentMouseState.ScrollWheelValue > previousMouseState.ScrollWheelValue);
+                    return currentMouseState.ScrollWheelValue > previousMouseState.ScrollWheelValue;
                 case MouseButtons.ScrollWheelDown:
-                    return (currentMouseState.ScrollWheelValue < previousMouseState.ScrollWheelValue);
+                    return currentMouseState.ScrollWheelValue < previousMouseState.ScrollWheelValue;
             }
 
             return false;
@@ -247,29 +247,29 @@ namespace AshTechEngine.Input
             switch (gamePadKey)
             {
                 case GamePadButtons.Up:
-                    return ((currentGamePadState.DPad.Up == ButtonState.Pressed) && (previousGamePadState.DPad.Up == ButtonState.Released));
+                    return currentGamePadState.DPad.Up == ButtonState.Pressed && previousGamePadState.DPad.Up == ButtonState.Released;
                 case GamePadButtons.Down:
-                    return ((currentGamePadState.DPad.Down == ButtonState.Pressed) && (previousGamePadState.DPad.Down == ButtonState.Released));
+                    return currentGamePadState.DPad.Down == ButtonState.Pressed && previousGamePadState.DPad.Down == ButtonState.Released;
                 case GamePadButtons.Left:
-                    return ((currentGamePadState.DPad.Left == ButtonState.Pressed) && (previousGamePadState.DPad.Left == ButtonState.Released));
+                    return currentGamePadState.DPad.Left == ButtonState.Pressed && previousGamePadState.DPad.Left == ButtonState.Released;
                 case GamePadButtons.Right:
-                    return ((currentGamePadState.DPad.Right == ButtonState.Pressed) && (previousGamePadState.DPad.Right == ButtonState.Released));
+                    return currentGamePadState.DPad.Right == ButtonState.Pressed && previousGamePadState.DPad.Right == ButtonState.Released;
 
                 case GamePadButtons.LeftStickUp:
-                    return ((currentGamePadState.ThumbSticks.Left.Y >= analogLimit) && (previousGamePadState.ThumbSticks.Left.Y < analogLimit));
+                    return currentGamePadState.ThumbSticks.Left.Y >= analogLimit && previousGamePadState.ThumbSticks.Left.Y < analogLimit;
                 case GamePadButtons.LeftStickDown:
-                    return ((currentGamePadState.ThumbSticks.Left.Y <= (0 - analogLimit) && (previousGamePadState.ThumbSticks.Left.Y > (0 - analogLimit))));
+                    return currentGamePadState.ThumbSticks.Left.Y <= 0 - analogLimit && previousGamePadState.ThumbSticks.Left.Y > 0 - analogLimit;
 
                 case GamePadButtons.ButtonA:
-                    return ((currentGamePadState.Buttons.A == ButtonState.Pressed) && (previousGamePadState.Buttons.A == ButtonState.Released));
+                    return currentGamePadState.Buttons.A == ButtonState.Pressed && previousGamePadState.Buttons.A == ButtonState.Released;
             }
             return false;
         }
 
-       // public Point GetMousePositionCamera(Camera camera)
-       // {
-       //     return camera.RawPositionToCamara(currentMouseState.Position);
-       // }
+        // public Point GetMousePositionCamera(Camera camera)
+        // {
+        //     return camera.RawPositionToCamara(currentMouseState.Position);
+        // }
 
         public Vector2 GetMousePosition()
         {

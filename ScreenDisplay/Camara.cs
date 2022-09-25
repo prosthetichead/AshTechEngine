@@ -2,15 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace AshTechEngine
+namespace AshTechEngine.ScreenDisplay
 {
     public class Camera
     {
         public float Zoom;
         public Vector2 Position;
-        
+
         public Rectangle Bounds { get; protected set; }
-        
+
         public Rectangle VisibleArea { get; protected set; }
         public Matrix Transform { get; protected set; }
 

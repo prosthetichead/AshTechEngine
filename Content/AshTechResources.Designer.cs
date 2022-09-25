@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AshTechEngine {
+namespace AshTechEngine.Content {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace AshTechEngine {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AshTechEngine.AshTechResources", typeof(AshTechResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AshTechEngine.Content.AshTechResources", typeof(AshTechResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

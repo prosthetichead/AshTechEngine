@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine.Input
+namespace AshTechEngine.InputManagment
 {
     public enum GamePadButtons
     {

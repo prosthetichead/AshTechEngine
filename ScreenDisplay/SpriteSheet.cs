@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine
+namespace AshTechEngine.ScreenDisplay
 {
     public class SpriteSheet
     {

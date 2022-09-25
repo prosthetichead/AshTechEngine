@@ -4,7 +4,7 @@ using System.IO.Compression;
 using System.Text;
 
 
-namespace AshTechEngine
+namespace AshTechEngine.ContentManagment
 {
     public class Compression
     {

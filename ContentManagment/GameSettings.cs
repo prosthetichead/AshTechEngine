@@ -1,17 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AshTechEngine.ScreenDisplay;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine
+namespace AshTechEngine.ContentManagment
 {
     public class Config
     {
         public int horizontalResolution { get; set; }
         public int verticalResolution { get; set; }
         public bool fullScreen { get; set; }
-        public bool allowResize { get; set;  }
+        public bool allowResize { get; set; }
 
         public Config()
         {
@@ -44,7 +45,7 @@ namespace AshTechEngine
             {
                 //file exits so read it and deserialize into the config object
                 string configJSON = System.IO.File.ReadAllText("ashtech.config");
-                config = JsonConvert.DeserializeObject<Config>(configJSON);                
+                config = JsonConvert.DeserializeObject<Config>(configJSON);
             }
             else
             {
@@ -60,7 +61,8 @@ namespace AshTechEngine
         public void SaveConfig()
         {
             string configJSON = JsonConvert.SerializeObject(config, Formatting.Indented);
-            System.IO.File.WriteAllText("ashtech.config", configJSON);
+            System.IO.File.WriteAllText("ashtech.config", configJSON); //Need If Android handeling
+
         }
 
         /// <summary>
@@ -77,14 +79,17 @@ namespace AshTechEngine
             previousConfig = config;
         }
 
-        public string resolutionText { 
-            get { 
-                return config.horizontalResolution + "x" + config.verticalResolution; 
-            } 
-            set {
+        public string resolutionText
+        {
+            get
+            {
+                return config.horizontalResolution + "x" + config.verticalResolution;
+            }
+            set
+            {
                 string[] res = value.Split('x');
                 //1920x1080
-                config.horizontalResolution = Convert.ToInt32( res[0] );
+                config.horizontalResolution = Convert.ToInt32(res[0]);
                 config.verticalResolution = Convert.ToInt32(res[1]);
 
             }

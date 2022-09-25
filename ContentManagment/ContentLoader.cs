@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace AshTechEngine
+namespace AshTechEngine.ContentManagment
 {
     public class ContentLoader
     {
@@ -18,7 +18,7 @@ namespace AshTechEngine
         {
             texture2Ds = new Dictionary<string, Texture2D>();
             this.graphicsDevice = graphicsDevice;
-            string[] all = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();            
+            // string[] all = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();            
         }
 
         public Texture2D Texture2DFromFile(string path)
@@ -39,7 +39,7 @@ namespace AshTechEngine
         public SpriteFontBase BitmapFontFromResource(System.Resources.ResourceManager rm, string fontName, string fontDataName, string fontTextureName, Point offset)
         {
             var spriteFontBase = Fonts.GetSpriteFontBase(fontName);
-            if(spriteFontBase == null) // font isnt in our font manager yet so lets add it then return it
+            if (spriteFontBase == null) // font isnt in our font manager yet so lets add it then return it
             {
                 var bytes = (byte[])rm.GetObject(fontTextureName);
                 var fontTexture = Texture2DFromBytes(bytes);
@@ -50,7 +50,7 @@ namespace AshTechEngine
             return spriteFontBase;
         }
 
-        public Texture2D Texture2DFromResource(System.Resources.ResourceManager rm,  string resourceName)
+        public Texture2D Texture2DFromResource(System.Resources.ResourceManager rm, string resourceName)
         {
             string fullName = rm.BaseName + "." + resourceName;
 
@@ -61,6 +61,10 @@ namespace AshTechEngine
             else
             {
                 var bytes = (byte[])rm.GetObject(resourceName);
+                if (bytes == null)
+                {
+                    throw new Exception("No Bytes Loaded, Check Resource Name is corrent: " + resourceName);
+                }
                 var texture2d = Texture2DFromBytes(bytes);
                 texture2Ds.Add(fullName, texture2d);
                 return texture2d;
