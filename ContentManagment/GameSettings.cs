@@ -1,6 +1,7 @@
 ﻿using AshTechEngine.ScreenDisplay;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +21,12 @@ namespace AshTechEngine.ContentManagment
             verticalResolution = 1080;
             fullScreen = false;
             allowResize = false;
+        }
+
+        public string prettyJSON()
+        {
+            var jsonString = JsonConvert.SerializeObject(this, Formatting.Indented, new JsonConverter[] { new StringEnumConverter() });
+            return jsonString;
         }
     }
 
@@ -58,6 +65,38 @@ namespace AshTechEngine.ContentManagment
             ApplyConfig();
         }
 
+        //
+        public string SetConfigFromName(string name, string value)
+        {
+            switch (name)
+            {
+                case "horizontalResolution":
+                    if(int.TryParse(value, out int result))
+                    {
+                        config.horizontalResolution = result;
+                        ApplyConfig();
+                        return "success";
+                    }
+                    else
+                    {
+                        return "error cant convert value to int";
+                    }
+                case "verticalResolution":
+                    if (int.TryParse(value, out int verticalResult))
+                    {
+                        config.verticalResolution = verticalResult;
+                        ApplyConfig();
+                        return "success";
+                    }
+                    else
+                    {
+                        return "error cant convert value to int";
+                    }
+                default:
+                    return "config name not found";
+            }
+        }
+
         public void SaveConfig()
         {
             string configJSON = JsonConvert.SerializeObject(config, Formatting.Indented);
@@ -91,7 +130,6 @@ namespace AshTechEngine.ContentManagment
                 //1920x1080
                 config.horizontalResolution = Convert.ToInt32(res[0]);
                 config.verticalResolution = Convert.ToInt32(res[1]);
-
             }
         }
     }

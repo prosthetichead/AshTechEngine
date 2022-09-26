@@ -8,9 +8,7 @@ namespace AshTechEngine.ContentManagment
 {
     public static class Fonts
     {
-        private static Dictionary<string, FontSystem> fontSystems;
         private static Dictionary<string, SpriteFontBase> spriteFontBases;
-
 
         public enum Alignment
         {
@@ -29,7 +27,6 @@ namespace AshTechEngine.ContentManagment
 
         static Fonts()
         {
-            fontSystems = new Dictionary<string, FontSystem>();
             spriteFontBases = new Dictionary<string, SpriteFontBase>();
         }
 
@@ -74,22 +71,18 @@ namespace AshTechEngine.ContentManagment
         //    fontSystems.Add(fontName, fontSystem);
         //}
 
-        public static SpriteFontBase GetSpriteFontBase(string fontName, int fontSize = 12)
-        {
-            if (fontSystems.TryGetValue(fontName, out var fontSystem))
-            {
-                return fontSystem.GetFont(fontSize);
-            }
-            else if (spriteFontBases.TryGetValue(fontName, out var bitmapFont))
+        public static SpriteFontBase GetSpriteFontBase(string fontName)
+        {           
+           if (spriteFontBases.TryGetValue(fontName, out var bitmapFont))
             {
                 return bitmapFont;
             }
             return null;
         }
 
-        public static Vector2 MeasureString(string fontName, int fontSize, string text, Vector2? scale = null, float characterSpacing = 0, float lineSpacing = 0)
+        public static Vector2 MeasureString(string fontName, string text, Vector2? scale = null, float characterSpacing = 0, float lineSpacing = 0)
         {
-            SpriteFontBase font = GetSpriteFontBase(fontName, fontSize);
+            SpriteFontBase font = GetSpriteFontBase(fontName);
             return MeasureString(font, text, scale, characterSpacing, lineSpacing);
         }
         public static Vector2 MeasureString(SpriteFontBase font, string text, Vector2? scale = null, float characterSpacing = 0, float lineSpacing = 0)
@@ -98,28 +91,28 @@ namespace AshTechEngine.ContentManagment
             return stringSize;
         }
 
-        public static void DrawString(SpriteBatch spriteBatch, string fontName, int fontSize, string text, Vector2 position, Color color,
+        public static void DrawString(SpriteBatch spriteBatch, string fontName, string text, Vector2 position, Color color,
                                       Vector2? scale = null, float rotation = 0, Vector2 origin = default, float layerDepth = 0, float characterSpacing = 0, float lineSpacing = 0)
         {
-            DrawString(spriteBatch, fontName, fontSize, text, position, new Color[] { color }, scale, rotation, origin, layerDepth, characterSpacing, lineSpacing);
+            DrawString(spriteBatch, fontName, text, position, new Color[] { color }, scale, rotation, origin, layerDepth, characterSpacing, lineSpacing);
         }
-        public static void DrawString(SpriteBatch spriteBatch, string fontName, int fontSize, string text, Vector2 position, Color[] colors,
+        public static void DrawString(SpriteBatch spriteBatch, string fontName, string text, Vector2 position, Color[] colors,
                                       Vector2? scale = null, float rotation = 0, Vector2 origin = default, float layerDepth = 0, float characterSpacing = 0, float lineSpacing = 0)
         {
-            SpriteFontBase font = GetSpriteFontBase(fontName, fontSize);
+            SpriteFontBase font = GetSpriteFontBase(fontName);
             spriteBatch.DrawString(font, text, position, colors, scale, rotation, origin, layerDepth, characterSpacing, lineSpacing);
         }
 
-        public static void DrawString(SpriteBatch spriteBatch, string fontName, int fontSize, string text, Rectangle rectangle, Alignment alignment, Color color,
+        public static void DrawString(SpriteBatch spriteBatch, string fontName, string text, Rectangle rectangle, Alignment alignment, Color color,
                                       Vector2? scale = null, float rotation = 0, float layerDepth = 0, float characterSpacing = 0, float lineSpacing = 0)
         {
-            DrawString(spriteBatch, fontName, fontSize, text, rectangle, alignment, new Color[] { color }, scale, rotation, layerDepth, characterSpacing, lineSpacing);
+            DrawString(spriteBatch, fontName, text, rectangle, alignment, new Color[] { color }, scale, rotation, layerDepth, characterSpacing, lineSpacing);
         }
-        public static void DrawString(SpriteBatch spriteBatch, string fontName, int fontSize, string text, Rectangle rectangle, Alignment alignment, Color[] colors,
+        public static void DrawString(SpriteBatch spriteBatch, string fontName, string text, Rectangle rectangle, Alignment alignment, Color[] colors,
                                       Vector2? scale = null, float rotation = 0, float layerDepth = 0, float characterSpacing = 0, float lineSpacing = 0)
         {
 
-            SpriteFontBase font = GetSpriteFontBase(fontName, fontSize);
+            SpriteFontBase font = GetSpriteFontBase(fontName);
             Vector2 stringSize = font.MeasureString(text, scale, characterSpacing, lineSpacing);
 
             if (alignment == Alignment.TopLeft)

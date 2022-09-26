@@ -93,7 +93,6 @@ namespace AshTechEngine.DebugTools
         private static string consoleTestLine = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
         private static int textPadding = 10;
         private static int lineHeight = 0;
-        private static int fontSize = 16;
 
         private static int animationSpeed = 18;
         private static int timeSinceCursorFlash = 0;
@@ -280,9 +279,12 @@ namespace AshTechEngine.DebugTools
         }
         public static void WriteLine(LineType lineType, string str)
         {
-            ConsoleLine consoleLine = new ConsoleLine() { lineType = lineType, lineText = str };
-            consoleLines.Add(consoleLine);
-            Debug.WriteLine(str);
+            foreach (string strSplit in str.Split("\n")){
+
+                ConsoleLine consoleLine = new ConsoleLine() { lineType = lineType, lineText = strSplit };
+                consoleLines.Add(consoleLine);
+                Debug.WriteLine(str);
+            }
         }
 
         internal static void Update()
@@ -332,7 +334,7 @@ namespace AshTechEngine.DebugTools
 
                 if (lineHeight == 0)
                 {
-                    var measureString = Fonts.MeasureString("console", fontSize, consoleTestLine);
+                    var measureString = Fonts.MeasureString("console", consoleTestLine);
                     lineHeight = (int)measureString.Y;
 
                 }
@@ -383,11 +385,11 @@ namespace AshTechEngine.DebugTools
                 {
                     var line = consoleLines[i];
 
-                    Fonts.DrawString(spriteBatch, "console", fontSize, consoleLines[i].lineText, new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + lineHeight * lineCount, consoleRectangle.Width - textPadding * 2, lineHeight), Fonts.Alignment.CenterLeft, line.lineColor);
+                    Fonts.DrawString(spriteBatch, "console", consoleLines[i].lineText, new Rectangle(consoleRectangle.X + textPadding, consoleRectangle.Y + lineHeight * lineCount, consoleRectangle.Width - textPadding * 2, lineHeight), Fonts.Alignment.CenterLeft, line.lineColor);
                     lineCount--;
                 }
 
-                Fonts.DrawString(spriteBatch, "console", fontSize, ">" + commandString + (displayCursor ? cursor : ""), new Vector2(consoleRectangle.X + textPadding, consoleRectangle.Height - (lineHeight + lineHeight / 2)), Color.LimeGreen);
+                Fonts.DrawString(spriteBatch, "console", ">" + commandString + (displayCursor ? cursor : ""), new Vector2(consoleRectangle.X + textPadding, consoleRectangle.Height - (lineHeight + lineHeight / 2)), Color.LimeGreen);
 
                 spriteBatch.End();
             }

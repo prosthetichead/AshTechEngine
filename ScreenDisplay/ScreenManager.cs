@@ -125,8 +125,17 @@ namespace AshTechEngine.ScreenDisplay
             //setup the console
             ConsoleAsh.LoadContent(ContentLoader, Game);
 
-            //add some commands to the console 
+            //add some built in engine commands to the console 
             ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { ConsoleAsh.WriteLine(ConsoleAsh.LineType.warning, frameRate.framerate + " FPS"); }));
+            ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("config", "show the current gameSettings", "displays info about the current configuration saved for the game", a => { ConsoleAsh.WriteLine(gameSettings.config.prettyJSON()); }));
+            ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("setConfig", "set a gameSettings value", "set a gameSettings value. setConfig [settingName] [value] ", a =>
+            {
+                if (a.Length == 2)
+                {
+                    ConsoleAsh.WriteLine(gameSettings.SetConfigFromName(a[0], a[1]));
+                }
+            }));
+
 
         }
 
@@ -203,16 +212,29 @@ namespace AshTechEngine.ScreenDisplay
 
 
             screensToDraw.Clear();
-            foreach (Screen screen in screens)
-                screensToDraw.Add(screen);
-
-            foreach (Screen screen in screensToDraw)
+            if (screens.Count > 0)
             {
-                if (screen.ScreenState == ScreenState.Hidden)
-                    continue;
-                screen.Draw(gameTime);
-            }
+                foreach (Screen screen in screens)
+                    screensToDraw.Add(screen);
 
+                foreach (Screen screen in screensToDraw)
+                {
+                    if (screen.ScreenState == ScreenState.Hidden)
+                        continue;
+                    screen.Draw(gameTime);
+                }
+            }
+            else
+            {
+                //No Screens to display not even a hidden one so display the hello world.
+                GraphicsDevice.Clear(Color.Black);
+                spriteBatch.Begin();
+                Fonts.DrawString(SpriteBatch, "console", "HELLO WORLD!", new Rectangle(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight), Fonts.Alignment.CenterCenter, new Color[] {Color.HotPink, Color.LimeGreen });
+                Fonts.DrawString(SpriteBatch, "console", "AshTechEngine is Running!",new Vector2(0,0), Color.LimeGreen);
+                
+                Fonts.DrawString(SpriteBatch, "console", "~ to view the console", new Vector2(20, 20), Color.HotPink);
+                spriteBatch.End();
+            }
             //draw the console
             ConsoleAsh.Draw(SpriteBatch);
         }

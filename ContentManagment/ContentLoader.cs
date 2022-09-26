@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+
 namespace AshTechEngine.ContentManagment
 {
     public class ContentLoader
@@ -18,7 +19,8 @@ namespace AshTechEngine.ContentManagment
         {
             texture2Ds = new Dictionary<string, Texture2D>();
             this.graphicsDevice = graphicsDevice;
-            // string[] all = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();            
+            string[] all = System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceNames();          
+            
         }
 
         public Texture2D Texture2DFromFile(string path)
@@ -36,7 +38,17 @@ namespace AshTechEngine.ContentManagment
             }
         }
 
-        public SpriteFontBase BitmapFontFromResource(System.Resources.ResourceManager rm, string fontName, string fontDataName, string fontTextureName, Point offset)
+        /// <summary>
+        /// Loads the bitmap font resources and adds them to the Fonts Class for later use.
+        /// The font can be found in the Fonts Class using the provided FontName eg. Fonts.GetSpriteFontBase(fontName) .
+        /// </summary>
+        /// <param name="rm"></param>
+        /// <param name="fontName"></param>
+        /// <param name="fontDataName"></param>
+        /// <param name="fontTextureName"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public void BitmapFontFromResource(System.Resources.ResourceManager rm, string fontName, string fontDataName, string fontTextureName, Point offset)
         {
             var spriteFontBase = Fonts.GetSpriteFontBase(fontName);
             if (spriteFontBase == null) // font isnt in our font manager yet so lets add it then return it
@@ -46,8 +58,7 @@ namespace AshTechEngine.ContentManagment
                 spriteFontBase = StaticSpriteFont.FromBMFont(rm.GetString(fontDataName), filenname => new TextureWithOffset(fontTexture, offset));
 
                 Fonts.AddSpriteFontBase(fontName, spriteFontBase);  //add it for next time
-            }
-            return spriteFontBase;
+            }            
         }
 
         public Texture2D Texture2DFromResource(System.Resources.ResourceManager rm, string resourceName)
