@@ -65,8 +65,14 @@ namespace AshTechEngine.ContentManagment
             ApplyConfig();
         }
 
-        //
-        public string SetConfigFromName(string name, string value)
+        /// <summary>
+        /// Used by the console can take 2 strings and atempts to set the value
+        /// Config is applyed but not saved
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public string SetConfigFromStrings(string name, string value)
         {
             switch (name)
             {
@@ -92,6 +98,28 @@ namespace AshTechEngine.ContentManagment
                     {
                         return "error cant convert value to int";
                     }
+                case "fullScreen":
+                    if(bool.TryParse(value, out bool fullscreenResult))
+                    {
+                        config.fullScreen = fullscreenResult;
+                        ApplyConfig();
+                        return "success";
+                    }
+                    else
+                    {
+                        return "error cant convert value to bool";
+                    }
+                case "allowResize":
+                    if (bool.TryParse(value, out bool allowResizeResult))
+                    {
+                        config.allowResize = allowResizeResult;
+                        ApplyConfig();
+                        return "success";
+                    }
+                    else
+                    {
+                        return "error cant convert value to bool";
+                    }
                 default:
                     return "config name not found";
             }
@@ -113,6 +141,7 @@ namespace AshTechEngine.ContentManagment
             screenManager.Game.Window.AllowUserResizing = config.allowResize;
             screenManager.Graphics.PreferredBackBufferWidth = config.horizontalResolution;
             screenManager.Graphics.PreferredBackBufferHeight = config.verticalResolution;
+            screenManager.Graphics.ApplyChanges();
             screenManager.Graphics.IsFullScreen = config.fullScreen;
             screenManager.Graphics.ApplyChanges();
             previousConfig = config;
