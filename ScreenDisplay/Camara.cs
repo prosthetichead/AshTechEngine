@@ -6,20 +6,21 @@ namespace AshTechEngine.ScreenDisplay
 {
     public class Camera
     {
+        private GraphicsDevice graphicsDevice;
+
         public float Zoom;
         public Vector2 Position;
-
         public Rectangle Bounds { get; protected set; }
 
         public Rectangle VisibleArea { get; protected set; }
         public Matrix Transform { get; protected set; }
 
-        public Camera(Viewport viewport)
+        public Camera(GraphicsDevice graphicsDevice)
         {
-            Bounds = viewport.Bounds;
+            this.graphicsDevice = graphicsDevice;
+            Bounds = graphicsDevice.Viewport.Bounds;
             Zoom = 1f;
             Position = Vector2.Zero;
-
             UpdateMatrix();
         }
 
@@ -49,9 +50,9 @@ namespace AshTechEngine.ScreenDisplay
             UpdateVisibleArea();
         }
 
-        public void UpdateCamera(Viewport bounds)
+        public void UpdateCamera()
         {
-            Bounds = bounds.Bounds;
+            Bounds = graphicsDevice.Viewport.Bounds;
             UpdateMatrix();
         }
 
