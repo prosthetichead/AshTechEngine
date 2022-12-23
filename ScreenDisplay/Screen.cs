@@ -1,8 +1,8 @@
 ﻿using System;
-using AshTechEngine.Input;
+using AshTechEngine.InputManagment;
 using Microsoft.Xna.Framework;
 
-namespace AshTechEngine
+namespace AshTechEngine.ScreenDisplay
 {
     /// <summary>
     /// The screen transition state.
@@ -39,7 +39,7 @@ namespace AshTechEngine
             protected set { transitionOnTime = value; }
         }
         private TimeSpan transitionOnTime = TimeSpan.Zero;
-                
+
         public TimeSpan TransitionOffTime
         {
             get { return transitionOffTime; }
@@ -72,7 +72,7 @@ namespace AshTechEngine
             protected set { isExiting = value; }
         }
         bool isExiting = false;
-                
+
         public bool IsActive
         {
             get
@@ -93,7 +93,7 @@ namespace AshTechEngine
         }
         ScreenManager screenManager;
 
-        
+
         /// <summary>
         /// Load graphics content for the screen.
         /// No need to load base
@@ -107,7 +107,7 @@ namespace AshTechEngine
         /// </summary>
         public virtual void UnloadContent() { }
 
-        
+
         /// <summary>
         /// runs the screens logic.
         /// This update is ALWAYS ran regardless of screen state or state of other screens
@@ -172,7 +172,7 @@ namespace AshTechEngine
             transitionPosition += transitionDelta * direction;
 
             // Did we reach the end of the transition?
-            if ((transitionPosition <= 0) || (transitionPosition >= 1))
+            if (transitionPosition <= 0 || transitionPosition >= 1)
             {
                 transitionPosition = MathHelper.Clamp(transitionPosition, 0, 1);
                 return false;
@@ -189,7 +189,7 @@ namespace AshTechEngine
         /// </summary>
         public virtual void HandleInput(GameTime gameTime, InputManager input) { }
 
- 
+
         /// <summary>
         /// This is called when the screen should draw itself.
         /// </summary>

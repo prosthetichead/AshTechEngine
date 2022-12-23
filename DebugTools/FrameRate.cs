@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine
+namespace AshTechEngine.DebugTools
 {
     class FrameRate
     {
@@ -15,14 +15,14 @@ namespace AshTechEngine
         {
             get
             {
-                return (numerator / currentFrametimes);
+                return numerator / currentFrametimes;
             }
         }
 
         public FrameRate(int oldFrameWeight)
         {
             numerator = oldFrameWeight;
-            weight = (double)oldFrameWeight / ((double)oldFrameWeight - 1d);
+            weight = oldFrameWeight / (oldFrameWeight - 1d);
         }
 
         public void Update(GameTime gameTime)
@@ -31,7 +31,7 @@ namespace AshTechEngine
             currentFrametimes = currentFrametimes / weight;
             currentFrametimes += timeSinceLastFrame;
         }
-        
+
     }
-    
+
 }

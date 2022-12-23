@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine
+namespace AshTechEngine.ScreenDisplay
 {
     public class SpriteSheet
     {
@@ -44,6 +44,11 @@ namespace AshTechEngine
         public void Draw(SpriteBatch spriteBatch, Vector2 position, Vector2 origin, float depth, Color color, SpriteEffects spriteEffect)
         {
             spriteBatch.Draw(texture, new Rectangle((int)position.X, (int)position.Y, singleSpriteWidth, singleSpriteHeight), GetSourceRectangle(spriteNumber), color, 0f, origin, spriteEffect, depth);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Vector2 position, Vector2 size, Vector2 origin, float depth, Color color, SpriteEffects spriteEffect)
+        {
+            spriteBatch.Draw(texture, new Rectangle((int)position.X, (int)position.Y, (int)size.X, (int)size.Y), GetSourceRectangle(spriteNumber), color, 0f, origin, spriteEffect, depth);
         }
     }
 }

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using AshTechEngine.Input;
+using AshTechEngine.InputManagment;
+using AshTechEngine.ContentManagment;
+using AshTechEngine.DebugTools;
 
-namespace AshTechEngine
+namespace AshTechEngine.ScreenDisplay
 {
     /// <summary>
     /// The screen manager is a component which manages one or more GameScreen
@@ -14,9 +16,6 @@ namespace AshTechEngine
     /// methods at the appropriate times, and automatically routes input to the
     /// topmost active screen.
     /// </summary>
-    /// <remarks>
-    /// This public class is similar to one in the GameStateManagement sample.
-    /// </remarks>
     public class ScreenManager : DrawableGameComponent
     {
         List<Screen> screens = new List<Screen>();
@@ -30,13 +29,12 @@ namespace AshTechEngine
         GraphicsDeviceManager graphics;
 
         IGraphicsDeviceService graphicsDeviceService;
-        
-        ContentManager content;
+
+        ContentLoader contentLoader;
         SpriteBatch spriteBatch;
         FrameRate frameRate;
 
 
-        
         /// <summary>
         /// access to our Game instance
         /// </summary>
@@ -72,11 +70,12 @@ namespace AshTechEngine
         }
 
         /// <summary>
-        /// A content manager!
+        /// A content loader helper!
+        /// Load Content from Raw Files or Resorces RESX files 
         /// </summary>
-        public ContentManager Content
+        public ContentLoader ContentLoader
         {
-            get { return content; }
+            get { return contentLoader; }
         }
 
         /// <summary>
@@ -87,23 +86,22 @@ namespace AshTechEngine
             get { return spriteBatch; }
         }
 
-        
+
         public ScreenManager(Game game, GraphicsDeviceManager graphics) : base(game)
         {
             this.graphics = graphics; // we need the graphics device manager 
-            
+
             input = new InputManager(game);
-            content = new ContentManager(game.Services, "Content");
 
-            graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(
-                                                        typeof(IGraphicsDeviceService));
-
-            frameRate = new FrameRate(5);
-
+            graphicsDeviceService = (IGraphicsDeviceService)game.Services.GetService(typeof(IGraphicsDeviceService));
             if (graphicsDeviceService == null)
                 throw new InvalidOperationException("No graphics device service.");
 
+            frameRate = new FrameRate(5);
+
             gameSettings = new GameSettings(this);
+
+            contentLoader = new ContentLoader(GraphicsDevice);
         }
 
 
@@ -114,12 +112,40 @@ namespace AshTechEngine
         {
             // Load content belonging to the screen manager.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
+
+            //load the default console font
+            contentLoader.BitmapFontFromResource(Content.AshTechResources.ResourceManager, "console", "pixellocale_fnt", "pixellocale_png", Point.Zero);
+
             // Tell each of the screens to load their content.
             foreach (Screen screen in screens)
             {
                 screen.LoadContent();
             }
+
+            //setup the console
+            ConsoleAsh.LoadContent(ContentLoader, Game);
+
+            //add some built in engine commands to the console 
+            ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("fr", "display the current frame rate", "displays the current frame rate to the console", a => { ConsoleAsh.WriteLine(ConsoleAsh.LineType.warning, frameRate.framerate + " FPS"); }));
+            ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("config", "show and set the current gameSettings", "displays info about the current configuration saved for the game. \n set config using config [settingName] [value] \n save config using config save", a => 
+            {
+                if (a.Length == 2)
+                {
+                    ConsoleAsh.WriteLine(gameSettings.SetConfigFromStrings(a[0], a[1]));
+                }
+                else if (a.Length == 1)
+                {
+                    if (a[0] == "save")
+                    {
+                        gameSettings.SaveConfig();
+                    }
+                }
+                else { ConsoleAsh.WriteLine(gameSettings.config.prettyJSON()); } 
+            }));
+            ConsoleAsh.AddConsoleCommand(new ConsoleAsh.ConsoleCommand("exit", "exit the game", "exit the game", a => { Game.Exit(); }));
+
+
+
         }
 
         /// <summary>
@@ -128,7 +154,7 @@ namespace AshTechEngine
         protected override void UnloadContent()
         {
             // Unload content belonging to the screen manager.
-            content.Unload();
+            //content.Unload();
 
             // Tell each of the screens to unload their content, if they have any
             foreach (Screen screen in screens)
@@ -138,15 +164,21 @@ namespace AshTechEngine
         }
 
 
-        
+
         /// <summary>
         /// Allows each screen to run logic.
         /// </summary>
         public override void Update(GameTime gameTime)
         {
+            input.Update();
 
+            ConsoleAsh.Update();
 
-            input.Update(); 
+            //check for input ` to open and close the console
+            if (input.IsKeyTriggered(Microsoft.Xna.Framework.Input.Keys.OemTilde))
+            {
+                ConsoleAsh.displayConsole = !ConsoleAsh.displayConsole;
+            }
 
             screensToUpdate.Clear();
             foreach (Screen screen in screens)
@@ -165,7 +197,7 @@ namespace AshTechEngine
 
                 if (screen.ScreenState == ScreenState.TransitionOn || screen.ScreenState == ScreenState.Active)
                 {
-                    if (otherScreenHasFocus == false) 
+                    if (otherScreenHasFocus == false)
                     {
                         screen.HandleInput(gameTime, input);
                         otherScreenHasFocus = true; //now no other screen can run its input updates
@@ -186,16 +218,34 @@ namespace AshTechEngine
             Game.Window.Title = "Debug Mode :: " + frameRate.framerate + " fps ";
 #endif
 
-            screensToDraw.Clear();
-            foreach (Screen screen in screens)
-                screensToDraw.Add(screen);
 
-            foreach (Screen screen in screensToDraw)
+
+            screensToDraw.Clear();
+            if (screens.Count > 0)
             {
-                if (screen.ScreenState == ScreenState.Hidden)
-                    continue;
-                screen.Draw(gameTime);
+                foreach (Screen screen in screens)
+                    screensToDraw.Add(screen);
+
+                foreach (Screen screen in screensToDraw)
+                {
+                    if (screen.ScreenState == ScreenState.Hidden)
+                        continue;
+                    screen.Draw(gameTime);
+                }
             }
+            else
+            {
+                //No Screens to display not even a hidden one so display the hello world message.
+                GraphicsDevice.Clear(Color.Black);
+                spriteBatch.Begin();
+                Fonts.DrawString(SpriteBatch, "console", "HELLO WORLD!", new Rectangle(0, 0, Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight), Fonts.Alignment.CenterCenter, new Color[] {Color.HotPink, Color.LimeGreen });
+                Fonts.DrawString(SpriteBatch, "console", "AshTechEngine is Running!",new Vector2(0,0), Color.LimeGreen);
+                
+                Fonts.DrawString(SpriteBatch, "console", "~ to view the console", new Vector2(20, 20), Color.HotPink);
+                spriteBatch.End();
+            }
+            //draw the console
+            ConsoleAsh.Draw(SpriteBatch);
         }
 
         /// <summary>
@@ -205,7 +255,7 @@ namespace AshTechEngine
         {
             screen.ScreenManager = this;
 
-            if ((graphicsDeviceService != null) && (graphicsDeviceService.GraphicsDevice != null))
+            if (graphicsDeviceService != null && graphicsDeviceService.GraphicsDevice != null)
             {
                 screen.LoadContent(); //if graphicsDeviceService is running then load content!
             }
@@ -220,8 +270,8 @@ namespace AshTechEngine
         public void RemoveScreen(Screen screen)
         {
             // If we have a graphics device, tell the screen to unload content.
-            if ((graphicsDeviceService != null) &&
-                (graphicsDeviceService.GraphicsDevice != null))
+            if (graphicsDeviceService != null &&
+                graphicsDeviceService.GraphicsDevice != null)
             {
                 screen.UnloadContent();
             }

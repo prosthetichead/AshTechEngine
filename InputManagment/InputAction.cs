@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AshTechEngine.Input
+namespace AshTechEngine.InputManagment
 {
     public enum GamePadButtons
     {
@@ -53,6 +53,8 @@ namespace AshTechEngine.Input
     {
         public string actionId;
         public string actionName;
+
+        public bool hiddenAction;
 
         public List<GamePadButtons> gamePadButtons = new List<GamePadButtons>();
         public List<Keys> keyboardKeys = new List<Keys>();
